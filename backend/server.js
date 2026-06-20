@@ -8,7 +8,7 @@ const { GoogleGenAI } = require('@google/genai');
 // Mengaktifkan AI dengan mengambil API Key dari brankas .env
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 // 1. Middleware: Satpam lalu lintas data
 app.use(cors()); // Mengizinkan domain frontend nanti mengakses API ini
