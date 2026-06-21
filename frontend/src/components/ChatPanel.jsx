@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { Bot, User, Send, RotateCcw } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Bot, User, Send, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 
 export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessage, isLoading, onSendMessage, onResetChat }) => {
   
@@ -56,11 +56,60 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
       );
     });
   };
+  
+  const [speakingIndex, setSpeakingIndex] = useState(null);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatHistory, isLoading]);
+
+  useEffect(() => {
+    return () => {
+      window.speechSynthesis.cancel();
+    };
+  }, []);
+
+  const speakText = (text, idx) => {
+    window.speechSynthesis.cancel();
+
+    if (speakingIndex === idx) {
+      setSpeakingIndex(null);
+      return;
+    }
+
+    if (!text) return;
+
+    // Bersihkan sintaks markdown agar dibaca lebih natural oleh TTS
+    let cleanText = text
+      .replace(/```[\s\S]*?```/g, ' [Blok kode diabaikan] ')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/\*\*([^*]+)\*\*/g, '$1')
+      .replace(/\*([^*]+)\*/g, '$1');
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    
+    // Cari suara Bahasa Indonesia
+    const voices = window.speechSynthesis.getVoices();
+    const idVoice = voices.find(v => v.lang.startsWith('id') || v.lang.includes('ID'));
+    if (idVoice) {
+      utterance.voice = idVoice;
+    }
+    utterance.lang = 'id-ID';
+    utterance.rate = 1.0;
+    
+    utterance.onstart = () => setSpeakingIndex(idx);
+    utterance.onend = () => setSpeakingIndex(null);
+    utterance.onerror = () => setSpeakingIndex(null);
+
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const handleReset = () => {
+    window.speechSynthesis.cancel();
+    setSpeakingIndex(null);
+    onResetChat();
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -77,7 +126,7 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
           <h1 className="text-sm sm:text-lg font-bold tracking-tight">MentorJS AI</h1>
         </div>
         <button
-          onClick={onResetChat}
+          onClick={handleReset}
           className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 border border-gray-800 hover:border-gray-700 text-gray-400 hover:text-gray-200 px-2.5 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer active:scale-95"
           title="Reset Percakapan"
         >
@@ -102,10 +151,20 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
                   <User size={12} className="text-emerald-400" />
                 </>
               ) : (
-                <>
+                <div className="flex items-center gap-1.5 select-none">
                   <Bot size={12} className="text-violet-400" />
                   <span className="text-xs text-gray-500 font-semibold">Mentor AI</span>
-                </>
+                  <button
+                    type="button"
+                    onClick={() => speakText(msg.text, idx)}
+                    className={`ml-1 p-0.5 rounded hover:bg-slate-800 transition-colors cursor-pointer ${
+                      speakingIndex === idx ? 'text-emerald-400 animate-pulse' : 'text-gray-500 hover:text-gray-300'
+                    }`}
+                    title={speakingIndex === idx ? "Hentikan Suara" : "Dengarkan Suara"}
+                  >
+                    {speakingIndex === idx ? <VolumeX size={12} /> : <Volume2 size={12} />}
+                  </button>
+                </div>
               )}
             </div>
             <div 
@@ -146,7 +205,7 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             placeholder={isLoading ? "Mentor sedang mengetik..." : "Tanya mentor (misal: 'Kenapa kode saya error?')..."} 
-            className="flex-1 bg-transparent text-xs sm:text-sm outline-none px-1.5 sm:px-2" 
+            className="flex-1 bg-transparent text-base md:text-sm outline-none px-1.5 sm:px-2" 
             disabled={isLoading}
           />
           <button 
