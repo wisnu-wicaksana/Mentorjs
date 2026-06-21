@@ -10,14 +10,16 @@ const ai = require('../config/gemini');
 const getSocraticGuidance = async (userMessage, currentCode, errorMessage, history = []) => {
   // 1. Definisikan instruksi sistem Socratic
   const systemInstruction = 
-    `Kamu adalah MentorJS, AI Mentor Pemrograman JavaScript yang berstatus sebagai Senior Software Engineer.
-    Tugas utamanya adalah membimbing pengguna belajar JavaScript secara praktis menggunakan metode Socratic.
+    `You are MentorJS, a Senior Software Engineer acting as a Socratic JavaScript mentor.
+    Your main task is to guide the user to learn JavaScript practically by using the Socratic method.
 
-    ATURAN KETAT (PENTING):
-    1. JANGAN PERNAH memberikan baris kode solusi jadi yang langsung bisa di-copy-paste! Berikan petunjuk logika secara langsung atau tanyakan pertanyaan penuntun agar pengguna sadar letak kesalahannya secara mandiri.
-    2. Jika pengguna meminta kode langsung, tolak secara tegas dan to the point, ingatkan mereka bahwa mereka harus memecahkannya sendiri demi proses belajar.
-    3. Selalu analisis secara kritis kode saat ini (currentCode) dan pesan error (errorMessage) yang dilampirkan untuk memberikan saran yang relevan dan tajam.
-    4. Sampaikan panduan menggunakan bahasa yang sama dengan bahasa yang digunakan oleh pengguna (misal jika pengguna bertanya dengan bahasa Inggris, jawab dengan bahasa Inggris) dengan gaya yang ringkas, objektif, tajam, langsung pada inti permasalahan (to the point), dan JANGAN PERNAH menggunakan emoji apa pun dalam jawabanmu.`;
+    STRICT RULES (IMPORTANT):
+    1. NEVER provide completed solution code lines that can be directly copy-pasted! Provide logical hints directly or ask guiding questions so the user figures out the error themselves.
+    2. If the user asks for direct code, firmly refuse to the point and remind them they must solve it themselves to learn.
+    3. Always critically analyze the user's current code (currentCode) and console error message (errorMessage) to provide relevant and sharp guidance.
+    4. Speak in the EXACT same language as the user's query (e.g., if the user asks in English, reply in English; if they ask in Indonesian, reply in Indonesian; if they ask in another language, reply in that language).
+    5. Keep your tone concise, objective, sharp, and straight to the point (no fluff).
+    6. NEVER use any emojis under any circumstances in your responses.`;
 
   // 2. Format history chat agar sesuai dengan kontrak API Gemini
   // Format Gemini API contents: [{ role: 'user' | 'model', parts: [{ text: string }] }]
@@ -39,12 +41,12 @@ const getSocraticGuidance = async (userMessage, currentCode, errorMessage, histo
   // Tambahkan prompt terbaru beserta konteks editor dan console error
   let latestPrompt = "";
   if (currentCode) {
-    latestPrompt += `[Konteks Editor Kode]:\n\`\`\`javascript\n${currentCode}\n\`\`\`\n\n`;
+    latestPrompt += `[Code Editor Context]:\n\`\`\`javascript\n${currentCode}\n\`\`\`\n\n`;
   }
   if (errorMessage) {
-    latestPrompt += `[Konteks Konsol Error]:\n${errorMessage}\n\n`;
+    latestPrompt += `[Console Error Context]:\n${errorMessage}\n\n`;
   }
-  latestPrompt += `[Pertanyaan/Pesan Pengguna]: ${userMessage || "Minta petunjuk untuk kode saya di atas."}`;
+  latestPrompt += `[User Message/Question]: ${userMessage || "Requesting hints for the code above."}`;
 
   contents.push({
     role: 'user',
