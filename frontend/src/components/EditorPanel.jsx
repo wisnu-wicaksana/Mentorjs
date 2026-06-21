@@ -34,10 +34,10 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
             defaultValue="default"
             className="bg-slate-900 border border-gray-800 text-[10px] sm:text-xs text-gray-300 rounded pl-2 pr-6 sm:pl-3 sm:pr-8 py-1 sm:py-1.5 w-20 xs:w-28 sm:w-auto outline-none focus:border-violet-500/50 cursor-pointer transition-colors"
           >
-            <option value="default">Halo Dunia (Default)</option>
-            <option value="loops">Perulangan (Loops)</option>
-            <option value="arrays">Array & Object</option>
-            <option value="functions">Fungsi (Functions)</option>
+            <option value="default">Hello World (Default)</option>
+            <option value="loops">Loops</option>
+            <option value="arrays">Arrays & Objects</option>
+            <option value="functions">Functions</option>
           </select>
         </div>
         
@@ -45,10 +45,10 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
           <button 
             onClick={exportCode}
             className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 border border-gray-800 text-gray-300 hover:text-white px-2.5 py-2 sm:px-3 sm:py-2 rounded-md text-[10px] sm:text-xs font-bold transition-all active:scale-95 cursor-pointer"
-            title="Download Kode (.js)"
+            title="Download Code (.js)"
           >
             <Download size={13} className="sm:w-3.5 sm:h-3.5" />
-            <span className="hidden sm:inline">Unduh</span>
+            <span className="hidden sm:inline">Download</span>
           </button>
           
           <button 
@@ -56,7 +56,7 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
             className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-md text-[10px] sm:text-xs font-bold transition-all transform active:scale-95 cursor-pointer shadow-lg shadow-emerald-900/20"
           >
             <Play size={13} className="sm:w-3.5 sm:h-3.5" />
-            <span>Jalankan</span>
+            <span>Run</span>
           </button>
         </div>
       </div>
@@ -92,7 +92,7 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
                   : 'text-gray-500 border-transparent hover:text-gray-300'
               }`}
             >
-              Konsol Output
+              Console Output
             </button>
             <button
               onClick={() => setBottomTab('inspector')}
@@ -102,7 +102,7 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
                   : 'text-gray-500 border-transparent hover:text-gray-300'
               }`}
             >
-              Inspektur Variabel
+              Variable Inspector
             </button>
           </div>
           
@@ -122,7 +122,7 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
           {bottomTab === 'console' ? (
             <div className="font-mono text-xs md:text-sm space-y-2">
               {consoleOutput.length === 0 ? (
-                <span className="text-gray-600 italic">Belum ada output. Klik "Jalankan" untuk melihat hasil.</span>
+                <span className="text-gray-600 italic">No output yet. Click "Run" to see results.</span>
               ) : (
                 consoleOutput.map((log, idx) => (
                   <div 
@@ -148,16 +148,16 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
             <div className="h-full flex flex-col">
               {variables.length === 0 ? (
                 <span className="text-gray-600 italic text-xs md:text-sm font-sans">
-                  Belum ada variabel terdeteksi. Definisikan variabel (`let`, `const`, atau `var`) di tingkat teratas (*top-level*), lalu klik "Jalankan" untuk menginspeksi nilainya secara langsung.
+                  No variables detected. Define top-level variables (\`let\`, \`const\`, or \`var\`) and click "Run" to inspect their values.
                 </span>
               ) : (
                 <div className="overflow-x-auto w-full">
                   <table className="w-full text-left text-xs font-mono select-text border-collapse">
                     <thead>
                       <tr className="border-b border-gray-800 text-gray-500 uppercase font-sans text-[9px] md:text-[10px] tracking-wider select-none">
-                        <th className="py-2 px-3">Nama</th>
-                        <th className="py-2 px-3">Tipe</th>
-                        <th className="py-2 px-3">Nilai</th>
+                        <th className="py-2 px-3">Name</th>
+                        <th className="py-2 px-3">Type</th>
+                        <th className="py-2 px-3">Value</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-900/50">

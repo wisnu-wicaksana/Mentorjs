@@ -5,7 +5,7 @@ export const useChat = () => {
   const [chatHistory, setChatHistory] = useState([
     { 
       sender: 'mentor', 
-      text: 'Halo! Saya MentorJS. Tulis kodemu di sebelah kiri, dan tanyakan apa saja jika kamu bingung atau menemukan error. Saya tidak akan memberikan jawaban langsung, melainkan membantumu memecahkannya!' 
+      text: "Hello! I'm MentorJS. Write your code on the left, and ask me anything if you are confused or find an error. I won't give you direct answers, but I will help you solve it yourself!" 
     }
   ]);
   const [inputMessage, setInputMessage] = useState('');
@@ -18,7 +18,7 @@ export const useChat = () => {
     setInputMessage('');
     setIsLoading(true);
 
-    const newUserMessage = { sender: 'user', text: userText || "Tolong periksa kode saya di sebelah kiri." };
+    const newUserMessage = { sender: 'user', text: userText || "Please check my code on the left." };
     const updatedHistory = [...chatHistory, newUserMessage];
     setChatHistory(updatedHistory);
 
@@ -40,7 +40,7 @@ export const useChat = () => {
         ...prev,
         { 
           sender: 'mentor', 
-          text: '⚠️ Maaf, saya gagal terhubung ke backend API. Pastikan server backend Anda di port 3000 sudah aktif!' 
+          text: '⚠️ Sorry, I failed to connect to the backend API. Please make sure your backend server is running on port 3000!'  
         }
       ]);
     } finally {
@@ -52,7 +52,7 @@ export const useChat = () => {
     setChatHistory([
       { 
         sender: 'mentor', 
-        text: 'Halo! Saya MentorJS. Tulis kodemu di sebelah kiri, dan tanyakan apa saja jika kamu bingung atau menemukan error. Saya tidak akan memberikan jawaban langsung, melainkan membantumu memecahkannya!' 
+        text: "Hello! I'm MentorJS. Write your code on the left, and ask me anything if you are confused or find an error. I won't give you direct answers, but I will help you solve it yourself!" 
       }
     ]);
   };

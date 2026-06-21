@@ -53,9 +53,7 @@ const extractTopLevelVariables = (codeText) => {
 
 export const useCodeRunner = () => {
   const [code, setCode] = useState(
-    `// Tulis kode JavaScript di sini
-const mentor = "MentorJS";
-console.log("Halo dari " + mentor + "!");`,
+    `// Write JavaScript code here\nconst mentor = "MentorJS";\nconsole.log("Hello from " + mentor + "!");`,
   );
   const [consoleOutput, setConsoleOutput] = useState([]);
   const [variables, setVariables] = useState([]);
@@ -130,7 +128,7 @@ console.log("Halo dari " + mentor + "!");`,
       setConsoleOutput([
         {
           type: "system",
-          text: "Kode berhasil dijalankan tanpa output console.log().",
+          text: "Code executed successfully with no console.log() output.",
         },
       ]);
     } else {

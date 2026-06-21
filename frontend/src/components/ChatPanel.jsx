@@ -82,20 +82,23 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
 
     // Bersihkan sintaks markdown agar dibaca lebih natural oleh TTS
     let cleanText = text
-      .replace(/```[\s\S]*?```/g, ' [Blok kode diabaikan] ')
+      .replace(/```[\s\S]*?```/g, ' [Code block ignored] ')
       .replace(/`([^`]+)`/g, '$1')
       .replace(/\*\*([^*]+)\*\*/g, '$1')
       .replace(/\*([^*]+)\*/g, '$1');
 
     const utterance = new SpeechSynthesisUtterance(cleanText);
     
-    // Cari suara Bahasa Indonesia
+    // Deteksi apakah teks berbahasa Indonesia atau Inggris
+    const isIndonesian = /\b(kamu|saya|dan|untuk|adalah|kode|ini|itu|yang|di|ke|dari)\b/i.test(cleanText);
+    const targetLang = isIndonesian ? 'id-ID' : 'en-US';
+    
     const voices = window.speechSynthesis.getVoices();
-    const idVoice = voices.find(v => v.lang.startsWith('id') || v.lang.includes('ID'));
-    if (idVoice) {
-      utterance.voice = idVoice;
+    const matchingVoice = voices.find(v => v.lang.toLowerCase().startsWith(isIndonesian ? 'id' : 'en'));
+    if (matchingVoice) {
+      utterance.voice = matchingVoice;
     }
-    utterance.lang = 'id-ID';
+    utterance.lang = targetLang;
     utterance.rate = 1.0;
     
     utterance.onstart = () => setSpeakingIndex(idx);
@@ -128,7 +131,7 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
         <button
           onClick={handleReset}
           className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 border border-gray-800 hover:border-gray-700 text-gray-400 hover:text-gray-200 px-2.5 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer active:scale-95"
-          title="Reset Percakapan"
+          title="Reset Conversation"
         >
           <RotateCcw size={12} />
           <span>Reset</span>
@@ -147,7 +150,7 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
             <div className="flex items-center gap-1.5 mb-1">
               {msg.sender === 'user' ? (
                 <>
-                  <span className="text-xs text-gray-500 font-semibold">Kamu</span>
+                  <span className="text-xs text-gray-500 font-semibold">You</span>
                   <User size={12} className="text-emerald-400" />
                 </>
               ) : (
@@ -160,7 +163,7 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
                     className={`ml-1 p-0.5 rounded hover:bg-slate-800 transition-colors cursor-pointer ${
                       speakingIndex === idx ? 'text-emerald-400 animate-pulse' : 'text-gray-500 hover:text-gray-300'
                     }`}
-                    title={speakingIndex === idx ? "Hentikan Suara" : "Dengarkan Suara"}
+                    title={speakingIndex === idx ? "Stop Audio" : "Listen to Audio"}
                   >
                     {speakingIndex === idx ? <VolumeX size={12} /> : <Volume2 size={12} />}
                   </button>
@@ -184,7 +187,7 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
           <div className="mr-auto items-start flex flex-col max-w-[85%]">
             <div className="flex items-center gap-1.5 mb-1">
               <Bot size={12} className="text-violet-400" />
-              <span className="text-xs text-gray-500 font-semibold">Mentor AI sedang menganalisis...</span>
+              <span className="text-xs text-gray-500 font-semibold">Mentor AI is analyzing...</span>
             </div>
             <div className="bg-slate-900 border border-gray-800 p-3 rounded-lg text-sm rounded-tl-none flex items-center gap-1.5">
               <div className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
@@ -204,7 +207,7 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
             type="text" 
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
-            placeholder={isLoading ? "Mentor sedang mengetik..." : "Tanya mentor (misal: 'Kenapa kode saya error?')..."} 
+            placeholder={isLoading ? "Mentor is typing..." : "Ask mentor (e.g., 'Why is my code throwing an error?')..."} 
             className="flex-1 bg-transparent text-base md:text-sm outline-none px-1.5 sm:px-2" 
             disabled={isLoading}
           />

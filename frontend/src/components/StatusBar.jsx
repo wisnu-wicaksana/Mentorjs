@@ -5,7 +5,7 @@ export const StatusBar = () => {
     <div className="bg-slate-950 border-t border-gray-800 px-4 py-1.5 flex justify-between items-center text-[10px] md:text-xs text-gray-500 shrink-0 select-none">
       <div className="flex items-center gap-2">
         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-        <span>Sistem Siap (Online)</span>
+        <span>System Ready (Online)</span>
       </div>
       <div className="flex items-center gap-1.5">
         <span>Powered by</span>
