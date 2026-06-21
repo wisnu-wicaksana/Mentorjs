@@ -11,3 +11,30 @@ body,
   background-color: #0f172a; /* bg-slate-900 fallback */
   color: #f8fafc; /* text-slate-50 fallback */
 }
+
+/* Sembunyikan status bar dekoratif pada semua mode lanskap HP */
+@media (max-height: 540px) and (max-width: 960px) {
+  .short-screen-hide-status {
+    display: none !important;
+  }
+}
+
+/* Helper untuk tinggi editor dan konsol berbasis tinggi layar (Viewport Height) */
+@media (min-height: 600px) {
+  .editor-min-height {
+    min-height: 300px !important;
+  }
+  .console-height {
+    height: 256px !important; /* h-64 equivalent */
+  }
+}
+
+@media (max-height: 599px) {
+  .editor-min-height {
+    min-height: 120px !important;
+  }
+  .console-height {
+    height: 150px !important; /* h-36/h-40 equivalent, saves space on mobile landscape */
+  }
+}
+

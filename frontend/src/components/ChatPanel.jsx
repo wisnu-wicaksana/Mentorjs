@@ -68,13 +68,13 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
   };
 
   return (
-    <div className={`flex-1 flex flex-col bg-slate-950 border-t md:border-t-0 md:border-l border-gray-800 ${activeTab === 'chat' ? 'flex' : 'hidden md:flex'} md:w-1/3 min-h-0`}>
+    <div className={`flex-1 flex flex-col bg-slate-950 border-t md:border-t-0 md:border-l border-gray-800 ${activeTab === 'chat' ? 'flex' : 'hidden md:flex'} landscape:flex md:w-1/3 landscape:w-1/3 min-h-0`}>
       
       {/* Header Panel Chat */}
-      <div className="p-4 bg-slate-950 border-b border-gray-800 flex items-center justify-between select-none">
+      <div className="p-2.5 sm:p-4 bg-slate-950 border-b border-gray-800 flex items-center justify-between select-none shrink-0">
         <div className="flex items-center gap-2">
-          <Bot className="text-violet-400" size={24} />
-          <h1 className="text-lg font-bold tracking-tight">MentorJS AI</h1>
+          <Bot className="text-violet-400" size={20} className="sm:w-6 sm:h-6" />
+          <h1 className="text-sm sm:text-lg font-bold tracking-tight">MentorJS AI</h1>
         </div>
         <button
           onClick={onResetChat}
@@ -87,7 +87,7 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
       </div>
 
       {/* Kotak Riwayat Chat */}
-      <div className="flex-1 p-4 overflow-y-auto space-y-4">
+      <div className="flex-1 p-3 sm:p-4 overflow-y-auto space-y-3 sm:space-y-4">
         {chatHistory.map((msg, idx) => (
           <div 
             key={idx} 
@@ -139,22 +139,22 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
       </div>
 
       {/* Input Chat Panel */}
-      <form onSubmit={handleSubmit} className="p-4 bg-slate-950 border-t border-gray-800">
-        <div className="flex items-center gap-2 bg-slate-900 border border-gray-800 rounded-lg p-2 focus-within:border-violet-500/50 transition-colors">
+      <form onSubmit={handleSubmit} className="p-2 sm:p-4 bg-slate-950 border-t border-gray-800 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 bg-slate-900 border border-gray-800 rounded-lg p-1.5 sm:p-2 focus-within:border-violet-500/50 transition-colors">
           <input 
             type="text" 
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             placeholder={isLoading ? "Mentor sedang mengetik..." : "Tanya mentor (misal: 'Kenapa kode saya error?')..."} 
-            className="flex-1 bg-transparent text-sm outline-none px-2" 
+            className="flex-1 bg-transparent text-xs sm:text-sm outline-none px-1.5 sm:px-2" 
             disabled={isLoading}
           />
           <button 
             type="submit"
             disabled={isLoading || !inputMessage.trim()}
-            className="bg-violet-600 hover:bg-violet-500 disabled:bg-slate-800 disabled:text-gray-600 text-white p-2 rounded-md transition-colors cursor-pointer"
+            className="bg-violet-600 hover:bg-violet-500 disabled:bg-slate-800 disabled:text-gray-600 text-white p-1.5 sm:p-2 rounded-md transition-colors cursor-pointer"
           >
-            <Send size={14} />
+            <Send size={12} className="sm:w-3.5 sm:h-3.5" />
           </button>
         </div>
       </form>

@@ -16,7 +16,7 @@ function App() {
     <div className="flex flex-col h-screen bg-gray-900 text-white font-sans overflow-hidden">
       
       {/* Area Konten Utama */}
-      <div className="flex-1 flex flex-col md:flex-row min-h-0">
+      <div className="flex-1 flex flex-col md:flex-row landscape:flex-row min-h-0">
         
         {/* Editor & Konsol Output */}
         <EditorPanel 
@@ -43,13 +43,17 @@ function App() {
       </div>
 
       {/* Navigasi Mobile */}
-      <BottomNav 
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-      />
+      <div className="md:hidden landscape:hidden shrink-0">
+        <BottomNav 
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
+      </div>
 
       {/* Status Bar (IDE Footer style) */}
-      <StatusBar />
+      <div className="short-screen-hide-status shrink-0">
+        <StatusBar />
+      </div>
 
     </div>
   )

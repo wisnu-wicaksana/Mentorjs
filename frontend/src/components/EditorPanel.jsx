@@ -23,7 +23,7 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
   };
 
   return (
-    <div className={`flex-1 flex flex-col ${activeTab === 'editor' ? 'flex' : 'hidden md:flex'} md:w-2/3 min-h-0`}>
+    <div className={`flex-1 flex flex-col ${activeTab === 'editor' ? 'flex' : 'hidden md:flex'} landscape:flex md:w-2/3 landscape:w-2/3 min-h-0`}>
       
       {/* Header Panel Editor */}
       <div className="p-3 sm:p-4 bg-slate-950 border-b border-gray-800 flex justify-between items-center select-none gap-2 sm:gap-4">
@@ -62,7 +62,7 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
       </div>
 
       {/* Area Monaco Editor */}
-      <div className="flex-1 min-h-[300px] relative bg-slate-950">
+      <div className="flex-1 editor-min-height relative bg-slate-950">
         <Editor
           height="100%"
           defaultLanguage="javascript"
@@ -80,7 +80,7 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
       </div>
 
       {/* Panel Konsol Output & Inspektur (Terminal Style) */}
-      <div className="h-64 bg-slate-950 border-t border-gray-800 flex flex-col">
+      <div className="console-height bg-slate-950 border-t border-gray-800 flex flex-col shrink-0">
         {/* Tab Headers */}
         <div className="px-4 bg-slate-900/50 border-b border-gray-800 flex justify-between items-center select-none shrink-0">
           <div className="flex gap-2">
