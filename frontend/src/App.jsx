@@ -9,8 +9,7 @@ import { StatusBar } from './components/StatusBar'
 function App() {
   const [activeTab, setActiveTab] = useState('editor')
   
-  // Custom hooks untuk memisahkan state/logika bisnis (Separation of Concerns)
-  const { code, setCode, consoleOutput, runCode, clearConsole } = useCodeRunner()
+  const { code, setCode, consoleOutput, variables, runCode, clearConsole } = useCodeRunner()
   const { chatHistory, inputMessage, setInputMessage, isLoading, sendMessage, resetChat } = useChat()
 
   return (
@@ -27,6 +26,7 @@ function App() {
           runCode={runCode}
           consoleOutput={consoleOutput}
           clearConsole={clearConsole}
+          variables={variables}
         />
 
         {/* Chat AI Mentor Socratic */}
