@@ -11,7 +11,7 @@ function App() {
   
   // Custom hooks untuk memisahkan state/logika bisnis (Separation of Concerns)
   const { code, setCode, consoleOutput, runCode, clearConsole } = useCodeRunner()
-  const { chatHistory, inputMessage, setInputMessage, isLoading, sendMessage } = useChat()
+  const { chatHistory, inputMessage, setInputMessage, isLoading, sendMessage, resetChat } = useChat()
 
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white font-sans overflow-hidden">
@@ -37,6 +37,7 @@ function App() {
           setInputMessage={setInputMessage}
           isLoading={isLoading}
           onSendMessage={() => sendMessage(code, consoleOutput)}
+          onResetChat={resetChat}
         />
 
       </div>

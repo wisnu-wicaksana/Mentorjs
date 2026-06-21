@@ -1,7 +1,61 @@
 import { useEffect, useRef } from 'react';
-import { Bot, User, Send } from 'lucide-react';
+import { Bot, User, Send, RotateCcw } from 'lucide-react';
 
-export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessage, isLoading, onSendMessage }) => {
+export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessage, isLoading, onSendMessage, onResetChat }) => {
+  
+  // Custom markdown & code blocks parser to render AI responses cleanly
+  const renderMessageText = (text) => {
+    if (!text) return null;
+    
+    // Split by triple backticks for code blocks
+    const parts = text.split(/(```[\s\S]*?```)/g);
+    
+    return parts.map((part, index) => {
+      if (part.startsWith('```') && part.endsWith('```')) {
+        const codeContent = part.slice(3, -3);
+        const firstNewLineIndex = codeContent.indexOf('\n');
+        
+        let language = '';
+        let code = codeContent;
+        
+        if (firstNewLineIndex !== -1) {
+          language = codeContent.substring(0, firstNewLineIndex).trim();
+          code = codeContent.substring(firstNewLineIndex + 1);
+        }
+        
+        return (
+          <div key={index} className="my-2 border border-slate-800 rounded-md overflow-hidden bg-slate-950 font-mono text-xs w-full max-w-full">
+            {language && (
+              <div className="px-3 py-1 bg-slate-900 border-b border-slate-800 text-slate-400 flex justify-between items-center select-none font-sans text-[10px] font-bold uppercase tracking-wider">
+                <span>{language}</span>
+                <span className="text-[9px] text-slate-500 font-normal">KODE</span>
+              </div>
+            )}
+            <pre className="p-3 overflow-x-auto text-emerald-400 select-all leading-normal whitespace-pre">
+              <code>{code}</code>
+            </pre>
+          </div>
+        );
+      }
+      
+      // Split by single backticks for inline code
+      const inlineParts = part.split(/(`[^`\n]+`)/g);
+      return (
+        <span key={index} className="whitespace-pre-line leading-relaxed">
+          {inlineParts.map((inlinePart, inlineIndex) => {
+            if (inlinePart.startsWith('`') && inlinePart.endsWith('`')) {
+              return (
+                <code key={inlineIndex} className="px-1.5 py-0.5 mx-0.5 rounded bg-slate-800 text-pink-400 border border-slate-700 font-mono text-[13px]">
+                  {inlinePart.slice(1, -1)}
+                </code>
+              );
+            }
+            return inlinePart;
+          })}
+        </span>
+      );
+    });
+  };
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -17,9 +71,19 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
     <div className={`flex-1 flex flex-col bg-slate-950 border-t md:border-t-0 md:border-l border-gray-800 ${activeTab === 'chat' ? 'flex' : 'hidden md:flex'} md:w-1/3 min-h-0`}>
       
       {/* Header Panel Chat */}
-      <div className="p-4 bg-slate-950 border-b border-gray-800 flex items-center gap-2">
-        <Bot className="text-violet-400" size={24} />
-        <h1 className="text-lg font-bold tracking-tight">MentorJS AI</h1>
+      <div className="p-4 bg-slate-950 border-b border-gray-800 flex items-center justify-between select-none">
+        <div className="flex items-center gap-2">
+          <Bot className="text-violet-400" size={24} />
+          <h1 className="text-lg font-bold tracking-tight">MentorJS AI</h1>
+        </div>
+        <button
+          onClick={onResetChat}
+          className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 border border-gray-800 hover:border-gray-700 text-gray-400 hover:text-gray-200 px-2.5 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer active:scale-95"
+          title="Reset Percakapan"
+        >
+          <RotateCcw size={12} />
+          <span>Reset</span>
+        </button>
       </div>
 
       {/* Kotak Riwayat Chat */}
@@ -45,13 +109,13 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
               )}
             </div>
             <div 
-              className={`p-3 rounded-lg text-sm leading-relaxed border ${
+              className={`p-3 rounded-lg text-sm leading-relaxed border w-full break-words overflow-x-hidden ${
                 msg.sender === 'user' 
                   ? 'bg-emerald-950/20 border-emerald-800 text-emerald-100 rounded-tr-none' 
                   : 'bg-slate-900 border-gray-800 text-slate-100 rounded-tl-none'
               }`}
             >
-              <p className="whitespace-pre-line">{msg.text}</p>
+              {renderMessageText(msg.text)}
             </div>
           </div>
         ))}

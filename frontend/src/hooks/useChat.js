@@ -48,11 +48,21 @@ export const useChat = () => {
     }
   };
 
+  const resetChat = () => {
+    setChatHistory([
+      { 
+        sender: 'mentor', 
+        text: 'Halo! Saya MentorJS. Tulis kodemu di sebelah kiri, dan tanyakan apa saja jika kamu bingung atau menemukan error. Saya tidak akan memberikan jawaban langsung, melainkan membantumu memecahkannya!' 
+      }
+    ]);
+  };
+
   return {
     chatHistory,
     inputMessage,
     setInputMessage,
     isLoading,
-    sendMessage
+    sendMessage,
+    resetChat
   };
 };
