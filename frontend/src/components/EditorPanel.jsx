@@ -26,13 +26,13 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
     <div className={`flex-1 flex flex-col ${activeTab === 'editor' ? 'flex' : 'hidden md:flex'} md:w-2/3 min-h-0`}>
       
       {/* Header Panel Editor */}
-      <div className="p-4 bg-slate-950 border-b border-gray-800 flex justify-between items-center select-none gap-4">
-        <div className="flex items-center gap-3">
-          <h2 className="text-sm font-semibold text-gray-400">main.js</h2>
+      <div className="p-3 sm:p-4 bg-slate-950 border-b border-gray-800 flex justify-between items-center select-none gap-2 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <h2 className="text-xs sm:text-sm font-semibold text-gray-400">main.js</h2>
           <select 
             onChange={(e) => setCode(TEMPLATES[e.target.value] || '')}
             defaultValue="default"
-            className="bg-slate-900 border border-gray-800 text-[11px] md:text-xs text-gray-300 rounded px-2.5 py-1.5 outline-none focus:border-violet-500/50 cursor-pointer transition-colors"
+            className="bg-slate-900 border border-gray-800 text-[10px] sm:text-xs text-gray-300 rounded pl-2 pr-6 sm:pl-3 sm:pr-8 py-1 sm:py-1.5 w-20 xs:w-28 sm:w-auto outline-none focus:border-violet-500/50 cursor-pointer transition-colors"
           >
             <option value="default">Halo Dunia (Default)</option>
             <option value="loops">Perulangan (Loops)</option>
@@ -41,21 +41,21 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
           </select>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <button 
             onClick={exportCode}
-            className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 border border-gray-800 text-gray-300 hover:text-white px-3 py-2 rounded-md text-xs font-bold transition-all active:scale-95 cursor-pointer"
+            className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 border border-gray-800 text-gray-300 hover:text-white px-2.5 py-2 sm:px-3 sm:py-2 rounded-md text-[10px] sm:text-xs font-bold transition-all active:scale-95 cursor-pointer"
             title="Download Kode (.js)"
           >
-            <Download size={14} />
+            <Download size={13} className="sm:w-3.5 sm:h-3.5" />
             <span className="hidden sm:inline">Unduh</span>
           </button>
           
           <button 
             onClick={runCode}
-            className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-md text-xs font-bold transition-all transform active:scale-95 cursor-pointer shadow-lg shadow-emerald-900/20"
+            className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-md text-[10px] sm:text-xs font-bold transition-all transform active:scale-95 cursor-pointer shadow-lg shadow-emerald-900/20"
           >
-            <Play size={14} />
+            <Play size={13} className="sm:w-3.5 sm:h-3.5" />
             <span>Jalankan</span>
           </button>
         </div>
