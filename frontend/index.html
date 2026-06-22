@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'; font-src *; img-src * data:;" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' * blob: data: 'unsafe-inline' 'unsafe-eval'; connect-src 'self' * ws: wss:; script-src 'self' * blob: 'unsafe-inline' 'unsafe-eval'; style-src 'self' * 'unsafe-inline'; font-src 'self' * data:; img-src 'self' * data:; worker-src 'self' blob:;" />
     <title>Mentorjs</title>
   </head>
   <body>
