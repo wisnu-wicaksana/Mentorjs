@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Bot, User, Send, RotateCcw, Volume2, VolumeX } from 'lucide-react';
+import { speak, stopSpeech } from '../../../utils/tts';
 
 export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessage, isLoading, onSendMessage, onResetChat }) => {
   
@@ -66,50 +67,26 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
 
   useEffect(() => {
     return () => {
-      window.speechSynthesis.cancel();
+      stopSpeech();
     };
   }, []);
 
   const speakText = (text, idx) => {
-    window.speechSynthesis.cancel();
-
     if (speakingIndex === idx) {
+      stopSpeech();
       setSpeakingIndex(null);
       return;
     }
-
-    if (!text) return;
-
-    // Bersihkan sintaks markdown agar dibaca lebih natural oleh TTS
-    let cleanText = text
-      .replace(/```[\s\S]*?```/g, ' [Code block ignored] ')
-      .replace(/`([^`]+)`/g, '$1')
-      .replace(/\*\*([^*]+)\*\*/g, '$1')
-      .replace(/\*([^*]+)\*/g, '$1');
-
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    
-    // Deteksi apakah teks berbahasa Indonesia atau Inggris
-    const isIndonesian = /\b(kamu|saya|dan|untuk|adalah|kode|ini|itu|yang|di|ke|dari)\b/i.test(cleanText);
-    const targetLang = isIndonesian ? 'id-ID' : 'en-US';
-    
-    const voices = window.speechSynthesis.getVoices();
-    const matchingVoice = voices.find(v => v.lang.toLowerCase().startsWith(isIndonesian ? 'id' : 'en'));
-    if (matchingVoice) {
-      utterance.voice = matchingVoice;
-    }
-    utterance.lang = targetLang;
-    utterance.rate = 1.0;
-    
-    utterance.onstart = () => setSpeakingIndex(idx);
-    utterance.onend = () => setSpeakingIndex(null);
-    utterance.onerror = () => setSpeakingIndex(null);
-
-    window.speechSynthesis.speak(utterance);
+    speak(
+      text,
+      () => setSpeakingIndex(idx),
+      () => setSpeakingIndex(null),
+      () => setSpeakingIndex(null)
+    );
   };
 
   const handleReset = () => {
-    window.speechSynthesis.cancel();
+    stopSpeech();
     setSpeakingIndex(null);
     onResetChat();
   };
@@ -125,7 +102,7 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
       {/* Header Panel Chat */}
       <div className="p-2.5 sm:p-4 bg-slate-950 border-b border-gray-800 flex items-center justify-between select-none shrink-0">
         <div className="flex items-center gap-2">
-          <Bot className="text-violet-400" size={20} className="sm:w-6 sm:h-6" />
+          <Bot className="text-violet-400 sm:w-6 sm:h-6" size={20} />
           <h1 className="text-sm sm:text-lg font-bold tracking-tight">MentorJS AI</h1>
         </div>
         <button

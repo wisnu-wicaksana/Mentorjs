@@ -1,15 +1,10 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Play, Trash2, Download } from 'lucide-react';
 import Editor from '@monaco-editor/react';
+import { TEMPLATES } from '../../../constants/templates';
+import { Badge } from '../../../components/ui/Badge';
 
-const TEMPLATES = {
-  default: `// Tulis kode JavaScript di sini\nconst mentor = "AuraJS";\nconsole.log("Halo dari " + mentor + "!");`,
-  loops: `// Contoh Perulangan (Loops) di JavaScript\nconsole.log("--- Mencetak angka 1 sampai 5 ---");\nfor (let i = 1; i <= 5; i++) {\n  console.log("Angka:", i);\n}`,
-  arrays: `// Contoh Array & Manipulasinya\nconst buah = ["Apel", "Mangga", "Pisang"];\nconsole.log("Daftar buah:", buah);\n\nconsole.log("Mencetak buah satu per satu:");\nbuah.forEach((item, index) => {\n  console.log(\`Buah ke-\${index + 1}: \${item}\`);\n});`,
-  functions: `// Contoh Fungsi (Functions)\nfunction hitungLuasPersegi(sisi) {\n  return sisi * sisi;\n}\n\nconst sisi = 8;\nconst luas = hitungLuasPersegi(sisi);\nconsole.log(\`Luas persegi dengan sisi \${sisi} adalah \${luas}\`);`
-};
-
-export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, clearConsole, variables }) => {
+export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, clearConsole, variables, onBackToHome }) => {
   const [bottomTab, setBottomTab] = useState('console'); // 'console' | 'inspector'
 
   const exportCode = () => {
@@ -28,6 +23,13 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
       {/* Header Panel Editor */}
       <div className="p-3 sm:p-4 bg-slate-950 border-b border-gray-800 flex justify-between items-center select-none gap-2 sm:gap-4">
         <div className="flex items-center gap-2 sm:gap-3">
+          <button 
+            onClick={onBackToHome}
+            className="text-[10px] sm:text-xs font-bold text-violet-400 hover:text-violet-300 transition-colors mr-1.5 sm:mr-2 cursor-pointer flex items-center select-none"
+            title="Back to Homepage"
+          >
+            &larr; Home
+          </button>
           <h2 className="text-xs sm:text-sm font-semibold text-gray-400">main.js</h2>
           <select 
             onChange={(e) => setCode(TEMPLATES[e.target.value] || '')}
@@ -148,7 +150,7 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
             <div className="h-full flex flex-col">
               {variables.length === 0 ? (
                 <span className="text-gray-600 italic text-xs md:text-sm font-sans">
-                  No variables detected. Define top-level variables (\`let\`, \`const\`, or \`var\`) and click "Run" to inspect their values.
+                  No variables detected. Define top-level variables (`let`, `const`, or `var`) and click "Run" to inspect their values.
                 </span>
               ) : (
                 <div className="overflow-x-auto w-full">
@@ -162,14 +164,6 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
                     </thead>
                     <tbody className="divide-y divide-gray-900/50">
                       {variables.map((v, idx) => {
-                        let badgeColor = "bg-slate-800 text-slate-400 border-slate-700";
-                        if (v.type === 'string') badgeColor = "bg-amber-950/30 text-amber-400 border-amber-800/50";
-                        else if (v.type === 'number') badgeColor = "bg-blue-950/30 text-blue-400 border-blue-800/50";
-                        else if (v.type === 'boolean') badgeColor = "bg-violet-950/30 text-violet-400 border-violet-800/50";
-                        else if (v.type === 'array') badgeColor = "bg-emerald-950/30 text-emerald-400 border-emerald-800/50";
-                        else if (v.type === 'object') badgeColor = "bg-cyan-950/30 text-cyan-400 border-cyan-800/50";
-                        else if (v.type === 'function') badgeColor = "bg-rose-950/30 text-rose-400 border-rose-800/50";
-
                         let displayValue = String(v.value);
                         if (v.type === 'string') displayValue = `"${v.value}"`;
                         else if (v.type === 'array' || v.type === 'object') {
@@ -188,9 +182,9 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
                           <tr key={idx} className="hover:bg-slate-900/20 transition-colors border-b border-gray-900/20">
                             <td className="py-2.5 px-3 font-semibold text-gray-200">{v.name}</td>
                             <td className="py-2.5 px-3">
-                              <span className={`px-2 py-0.5 rounded text-[9px] md:text-[10px] uppercase font-bold border ${badgeColor}`}>
+                              <Badge type={v.type}>
                                 {v.type}
-                              </span>
+                              </Badge>
                             </td>
                             <td className="py-2.5 px-3 text-emerald-300 max-w-xs truncate" title={displayValue}>
                               {displayValue}

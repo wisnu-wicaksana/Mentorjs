@@ -1,4 +1,4 @@
-
+import React from 'react';
 import { Code, Bot } from 'lucide-react';
 
 export const BottomNav = ({ activeTab, setActiveTab }) => {
