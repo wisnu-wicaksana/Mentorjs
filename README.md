@@ -38,20 +38,30 @@ graph TD
 aura/
 ├── backend/
 │   ├── src/
-│   │   ├── config/       # GCP/Gemini initialization client
-│   │   ├── controllers/  # Request parsing and API validation
-│   │   ├── routes/       # API endpoints definitions
-│   │   └── services/     # Socratic prompt logic & Gemini API communications
-│   ├── server.js         # Backend Entry point
-│   ├── .env              # Sensitive credentials (DO NOT COMMIT!)
+│   │   ├── config/       # Gemini client configuration
+│   │   ├── controllers/  # Request validation & logic handlers
+│   │   ├── routes/       # Endpoint routing definition
+│   │   └── services/     # Socratic prompt template & Gemini service
+│   ├── server.js         # Backend Entry point (Express)
+│   ├── .env              # API keys and secrets (DO NOT COMMIT!)
 │   └── package.json
 └── frontend/
     ├── src/
-    │   ├── components/   # Presentational UI elements (Editor, Chat, Footer, Nav)
-    │   ├── hooks/        # Isolated business logic and React states
-    │   ├── services/     # Axios API service caller
-    │   ├── App.jsx       # Main Orchestrator component
-    │   └── index.css     # Base Tailwind CSS v4 setup
+    │   ├── components/
+    │   │   ├── layout/   # Global layout elements (Header, Footer)
+    │   │   └── ui/       # Atomic/stateless UI elements (Button, Badge, CodeMockup, MockupWindow, BackgroundEffect)
+    │   ├── constants/    # Monaco editor starting templates & mockup data
+    │   ├── hooks/        # Business logic custom hooks (useChat, useCodeRunner)
+    │   ├── pages/        # Top-level view containers
+    │   │   ├── Home/     # Interactive Homepage layout
+    │   │   └── Sandbox/  # Playground, Editor panel, Chat panel, & StatusBar
+    │   ├── services/     # Axios setup & HTTP communication with the backend
+    │   │   └── api.js
+    │   ├── utils/        # Extracted parse helpers & Text-to-Speech (TTS) engine
+    │   ├── App.css
+    │   ├── App.jsx       # View toggle router (Home / Workspace)
+    │   ├── index.css     # Base Tailwind styling v4
+    │   └── main.jsx      # React entry mount point
     ├── vite.config.js
     └── package.json
 ```
@@ -96,6 +106,22 @@ aura/
    npm run dev
    ```
 3. Open the link displayed in your terminal (usually `http://localhost:5173`) in your web browser.
+
+---
+
+## 🧪 Code Validation & Build
+
+To ensure strict code quality and compatibility, the project contains strict ESLint validation.
+
+* Run linter:
+  ```bash
+  cd frontend
+  npm run lint
+  ```
+* Test production build:
+  ```bash
+  npm run build
+  ```
 
 ---
 
