@@ -1,4 +1,3 @@
-import React from 'react';
 
 export const Badge = ({ type = 'default', children, className = '' }) => {
   const baseStyle = "px-2 py-0.5 rounded text-[9px] md:text-[10px] uppercase font-bold border select-none transition-all";

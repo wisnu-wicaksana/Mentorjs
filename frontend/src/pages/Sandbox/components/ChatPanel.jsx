@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Bot, User, Send, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import { speak, stopSpeech } from '../../../utils/tts';
 

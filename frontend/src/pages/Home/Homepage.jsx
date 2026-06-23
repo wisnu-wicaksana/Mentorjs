@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Code, Bot, Sparkles, Terminal, Volume2, ArrowRight } from 'lucide-react';
 import { BackgroundEffect } from '../../components/ui/BackgroundEffect';
 import { Button } from '../../components/ui/Button';
 import { MockupWindow } from '../../components/ui/MockupWindow';
 import { Header } from '../../components/layout/Header';
 import { Footer } from '../../components/layout/Footer';
-import { CodeMockup, totalCodeLength } from '../../components/ui/CodeMockup';
+import { CodeMockup } from '../../components/ui/CodeMockup';
+import { totalCodeLength } from '../../constants/templates';
 
 // Token definition for User Mockup Question
 const userTokens = [

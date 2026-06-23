@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Play, Trash2, Download } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import { TEMPLATES } from '../../../constants/templates';

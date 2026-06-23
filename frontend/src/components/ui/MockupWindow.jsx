@@ -1,4 +1,3 @@
-import React from 'react';
 
 export const MockupWindow = ({ title = 'mentorjs-workspace', children, className = '' }) => {
   return (

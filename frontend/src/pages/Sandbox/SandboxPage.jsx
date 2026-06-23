@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useCodeRunner } from '../../hooks/useCodeRunner';
 import { useChat } from '../../hooks/useChat';
 import { EditorPanel } from './components/EditorPanel';
