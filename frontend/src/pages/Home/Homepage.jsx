@@ -167,11 +167,11 @@ export const Homepage = ({ onLaunchApp }) => {
           {/* Reusable IDE Mockup Window */}
           <MockupWindow title="mentorjs-workspace" className="mt-16">
             {/* Window Body */}
-            <div className="flex flex-col sm:flex-row h-72 sm:h-96 font-mono text-[11px] sm:text-xs">
+            <div className="flex flex-col sm:flex-row h-[480px] sm:h-96 font-mono text-[11px] sm:text-xs">
               {/* Left Side: Code Editor Mockup */}
               <CodeMockup codeCharCount={codeCharCount} showConsole={showConsole} />
               {/* Right Side: Chat Mockup */}
-              <div className="w-full sm:w-80 bg-slate-900/40 p-4 flex flex-col justify-between overflow-hidden text-left border-t sm:border-t-0 border-gray-900 min-h-[200px] sm:min-h-0">
+              <div className="flex-1 sm:flex-none w-full sm:w-80 bg-slate-900/40 p-4 flex flex-col justify-between overflow-hidden text-left border-t sm:border-t-0 border-gray-900 min-h-[200px] sm:min-h-0">
                 <div className="space-y-4 flex-1 flex flex-col justify-end pb-2 overflow-y-auto">
                   {/* User Message (appears after typing is completed) */}
                   {userCharCount === totalUserLength && (
