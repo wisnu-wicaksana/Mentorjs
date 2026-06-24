@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const mentorRoutes = require('./src/routes/mentorRoutes');
 const authRoutes = require('./src/routes/authRoutes');
+const historyRoutes = require('./src/routes/historyRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -24,6 +25,7 @@ app.get('/', (req, res) => {
 
 // Daftarkan route di endpoint API masing-masing
 app.use('/api/auth', authRoutes);
+app.use('/api/history', historyRoutes);
 app.use('/api/mentor', mentorRoutes);
 
 // Jalankan Server
