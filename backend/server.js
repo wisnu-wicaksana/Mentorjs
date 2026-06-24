@@ -1,22 +1,29 @@
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const mentorRoutes = require('./src/routes/mentorRoutes');
+const authRoutes = require('./src/routes/authRoutes');
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173', // Alamat URL client React
+  credentials: true // Mengizinkan browser mengirim cookie JWT
+}));
+app.use(cookieParser());
 app.use(express.json());
 
 // Routes
 app.get('/', (req, res) => {
-  res.send('AuraJS/Mentorjs Backend API sudah aktif dengan Arsitektur Bersih!');
+  res.send('AuraJS/Mentorjs Backend API aktif dengan Dukungan Autentikasi!');
 });
 
-// Daftarkan route mentor di endpoint /api/mentor
+// Daftarkan route di endpoint API masing-masing
+app.use('/api/auth', authRoutes);
 app.use('/api/mentor', mentorRoutes);
 
 // Jalankan Server
