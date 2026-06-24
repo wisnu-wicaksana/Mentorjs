@@ -40,7 +40,6 @@ export const AuthProvider = ({ children }) => {
   // 2. Fungsi Login
   const login = async (email, password) => {
     try {
-      setAuthLoading(true);
       const response = await authAPI.login(email, password);
       if (response.status === 'success') {
         setUser(response.data);
@@ -51,15 +50,12 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       const msg = error.response?.data?.message || 'Gagal masuk. Silakan periksa kembali email & password Anda.';
       return { success: false, message: msg };
-    } finally {
-      setAuthLoading(false);
     }
   };
 
   // 3. Fungsi Registrasi
   const register = async (username, email, password) => {
     try {
-      setAuthLoading(true);
       const response = await authAPI.register(username, email, password);
       if (response.status === 'success') {
         setUser(response.data);
@@ -70,8 +66,6 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       const msg = error.response?.data?.message || 'Gagal mendaftar. Data tidak valid atau sudah digunakan.';
       return { success: false, message: msg };
-    } finally {
-      setAuthLoading(false);
     }
   };
 

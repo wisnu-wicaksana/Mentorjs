@@ -11,8 +11,23 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174'
+];
+
 app.use(cors({
-  origin: 'http://localhost:5173', // Alamat URL client React
+  origin: function (origin, callback) {
+    // izinkan request tanpa origin (seperti mobile apps, postman, curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'Kebijakan CORS memblokir akses dari origin ini.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
   credentials: true // Mengizinkan browser mengirim cookie JWT
 }));
 app.use(cookieParser());

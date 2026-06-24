@@ -85,13 +85,13 @@ const loginUser = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(401).json({ status: 'error', message: 'Email atau password salah.' });
+      return res.status(401).json({ status: 'error', message: 'Email belum terdaftar.' });
     }
 
     // Validasi password
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
-      return res.status(401).json({ status: 'error', message: 'Email atau password salah.' });
+      return res.status(401).json({ status: 'error', message: 'Kata sandi yang Anda masukkan salah.' });
     }
 
     // Buat token JWT dan pasang di cookie
