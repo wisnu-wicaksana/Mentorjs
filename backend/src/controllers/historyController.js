@@ -95,7 +95,7 @@ const getSessionById = async (req, res) => {
     if (!session) {
       return res.status(404).json({
         status: 'error',
-        message: 'Sesi belajar tidak ditemukan atau Anda tidak memiliki akses.',
+        message: 'Sesi belajar tidak ditemukan.',
       });
     }
 
@@ -129,7 +129,7 @@ const updateSessionCode = async (req, res) => {
     if (!session) {
       return res.status(404).json({
         status: 'error',
-        message: 'Sesi belajar tidak ditemukan atau Anda tidak memiliki hak akses.',
+        message: 'Sesi belajar tidak ditemukan.',
       });
     }
 
@@ -173,7 +173,7 @@ const deleteSession = async (req, res) => {
     if (!session) {
       return res.status(404).json({
         status: 'error',
-        message: 'Sesi belajar tidak ditemukan atau Anda tidak memiliki hak akses.',
+        message: 'Sesi belajar tidak ditemukan.',
       });
     }
 

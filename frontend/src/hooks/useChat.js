@@ -1,46 +1,164 @@
-import { useState } from 'react';
-import { sendMentorMessage } from '../services/api';
+import { useState, useCallback } from 'react';
+import { sendMentorMessage, historyAPI } from '../services/api';
+
+const DEFAULT_WELCOME_MESSAGE = {
+  sender: 'mentor',
+  text: "Halo! Saya adalah MentorJS. Tulis kode Anda di sebelah kiri, dan tanyakan apa saja jika Anda bingung atau menemukan error. Saya tidak akan memberikan jawaban langsung, tetapi akan memandu Anda menyelesaikannya sendiri!"
+};
 
 export const useChat = () => {
-  const [chatHistory, setChatHistory] = useState([
-    { 
-      sender: 'mentor', 
-      text: "Hello! I'm MentorJS. Write your code on the left, and ask me anything if you are confused or find an error. I won't give you direct answers, but I will help you solve it yourself!" 
-    }
-  ]);
+  const [sessions, setSessions] = useState([]);
+  const [activeSessionId, setActiveSessionId] = useState(null);
+  const [chatHistory, setChatHistory] = useState([DEFAULT_WELCOME_MESSAGE]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const sendMessage = async (code, consoleOutput) => {
-    if (!inputMessage.trim() && !code.trim()) return;
+  // 1. Memuat daftar sesi belajar dari database
+  const loadSessions = useCallback(async () => {
+    try {
+      const response = await historyAPI.getSessions();
+      if (response.status === 'success') {
+        setSessions(response.data);
+        return response.data;
+      }
+    } catch (err) {
+      console.error('Gagal mengambil daftar sesi:', err.message);
+    }
+    return [];
+  }, []);
 
+  // 2. Memilih & Memuat sesi belajar tertentu ke editor & chat
+  const selectSession = useCallback(async (sessionId, onCodeLoaded) => {
+    try {
+      setIsLoading(true);
+      setActiveSessionId(sessionId);
+      
+      const response = await historyAPI.getSession(sessionId);
+      if (response.status === 'success' && response.data) {
+        const sessionData = response.data;
+        
+        // Update riwayat chat. Jika kosong, tampilkan pesan selamat datang default
+        if (sessionData.messages && sessionData.messages.length > 0) {
+          setChatHistory(sessionData.messages);
+        } else {
+          setChatHistory([DEFAULT_WELCOME_MESSAGE]);
+        }
+        
+        // Panggil callback untuk memuat kode ke editor
+        if (onCodeLoaded) {
+          onCodeLoaded(sessionData.lastSavedCode || '');
+        }
+      }
+    } catch (err) {
+      console.error('Gagal memuat detail sesi:', err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // 3. Membuat sesi baru
+  const createSession = useCallback(async (initialCode = '', onCodeLoaded) => {
+    try {
+      setIsLoading(true);
+      const response = await historyAPI.createSession('Sesi Belajar Baru', initialCode);
+      if (response.status === 'success' && response.data) {
+        const newSession = response.data;
+        
+        // Muat ulang daftar sesi agar sidebar terupdate
+        await loadSessions();
+        
+        // Pasang sesi baru sebagai sesi aktif
+        setActiveSessionId(newSession.id);
+        setChatHistory([DEFAULT_WELCOME_MESSAGE]);
+        
+        if (onCodeLoaded) {
+          onCodeLoaded(newSession.lastSavedCode || '');
+        }
+        return newSession.id;
+      }
+    } catch (err) {
+      console.error('Gagal membuat sesi baru:', err.message);
+    } finally {
+      setIsLoading(false);
+    }
+    return null;
+  }, [loadSessions]);
+
+  // 4. Menghapus sesi belajar
+  const deleteSession = useCallback(async (sessionId, onCodeLoaded) => {
+    try {
+      const response = await historyAPI.deleteSession(sessionId);
+      if (response.status === 'success') {
+        const updatedList = await loadSessions();
+        
+        // Jika sesi yang dihapus adalah sesi aktif saat ini
+        if (activeSessionId === sessionId) {
+          if (updatedList.length > 0) {
+            // Pindahkan ke sesi pertama yang tersisa
+            await selectSession(updatedList[0].id, onCodeLoaded);
+          } else {
+            // Jika tidak ada sesi tersisa, bersihkan workspace
+            setActiveSessionId(null);
+            setChatHistory([DEFAULT_WELCOME_MESSAGE]);
+            if (onCodeLoaded) onCodeLoaded('');
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Gagal menghapus sesi:', err.message);
+    }
+  }, [activeSessionId, loadSessions, selectSession]);
+
+  // 5. Mengirim Pesan Chat & Menyimpannya ke DB secara Transaksional
+  const sendMessage = async (code, consoleOutput) => {
     const userText = inputMessage.trim();
+    if (!userText && !code.trim()) return;
+
     setInputMessage('');
     setIsLoading(true);
 
-    const newUserMessage = { sender: 'user', text: userText || "Please check my code on the left." };
+    // Siapkan pesan user untuk UI lokal
+    const newUserMessage = { 
+      sender: 'user', 
+      text: userText || "Tolong periksa kode saya di editor kiri." 
+    };
+    
+    // Update local state instan agar tidak terasa lambat
     const updatedHistory = [...chatHistory, newUserMessage];
     setChatHistory(updatedHistory);
 
+    // Kumpulkan error log dari console output
     const lastErrors = consoleOutput
       .filter(log => log.type === 'error')
       .map(log => log.text)
       .join('\n');
 
     try {
-      const result = await sendMentorMessage(userText, code, lastErrors || null, chatHistory);
+      // Panggil API mentor, sertakan activeSessionId agar backend mencatat ke DB
+      const result = await sendMentorMessage(
+        userText, 
+        code, 
+        lastErrors || null, 
+        chatHistory, 
+        activeSessionId
+      );
+
       if (result.status === 'success') {
         setChatHistory(prev => [...prev, { sender: 'mentor', text: result.data.reply }]);
+        
+        // Muat ulang daftar sesi karena judul sesi mungkin otomatis berubah 
+        // dari "Sesi Belajar Baru" menjadi ringkasan pesan pertama user
+        await loadSessions();
       } else {
-        throw new Error("Gagal mengambil data");
+        throw new Error("Gagal mengambil respon mentor");
       }
     } catch (err) {
-      console.error("Error useChat hook:", err);
+      console.error("Error saat mengirim pesan:", err);
       setChatHistory(prev => [
         ...prev,
         { 
           sender: 'mentor', 
-          text: '⚠️ Sorry, I failed to connect to the backend API. Please make sure your backend server is running on port 3000!'  
+          text: '⚠️ Maaf, gagal menghubungkan ke AI Mentor. Silakan periksa koneksi server lokal Anda.'  
         }
       ]);
     } finally {
@@ -49,19 +167,20 @@ export const useChat = () => {
   };
 
   const resetChat = () => {
-    setChatHistory([
-      { 
-        sender: 'mentor', 
-        text: "Hello! I'm MentorJS. Write your code on the left, and ask me anything if you are confused or find an error. I won't give you direct answers, but I will help you solve it yourself!" 
-      }
-    ]);
+    setChatHistory([DEFAULT_WELCOME_MESSAGE]);
   };
 
   return {
+    sessions,
+    activeSessionId,
     chatHistory,
     inputMessage,
     setInputMessage,
     isLoading,
+    loadSessions,
+    selectSession,
+    createSession,
+    deleteSession,
     sendMessage,
     resetChat
   };
