@@ -7,8 +7,10 @@ import { BottomNav } from './components/BottomNav';
 import { StatusBar } from './components/StatusBar';
 import { HistorySidebar } from './components/HistorySidebar';
 import { historyAPI } from '../../services/api';
+import { useAuth } from '../../hooks/useAuth';
 
-export const SandboxPage = ({ onBackToHome }) => {
+export const SandboxPage = ({ onBackToHome, onGoToAuth }) => {
+  const { isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState('editor');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
@@ -45,7 +47,7 @@ export const SandboxPage = ({ onBackToHome }) => {
 
   // 2. Handler Pindah Sesi (Auto-save kode sesi lama sebelum pindah)
   const handleSelectSession = async (sessionId) => {
-    if (activeSessionId) {
+    if (isAuthenticated && activeSessionId) {
       try {
         await historyAPI.saveCode(activeSessionId, code);
       } catch (err) {
@@ -58,7 +60,7 @@ export const SandboxPage = ({ onBackToHome }) => {
 
   // 3. Handler Buat Sesi Baru (Auto-save kode lama)
   const handleCreateSession = async () => {
-    if (activeSessionId) {
+    if (isAuthenticated && activeSessionId) {
       try {
         await historyAPI.saveCode(activeSessionId, code);
       } catch (err) {
@@ -71,7 +73,7 @@ export const SandboxPage = ({ onBackToHome }) => {
 
   // 4. Handler Kembali ke Home (Auto-save kode aktif)
   const handleBackToHome = async () => {
-    if (activeSessionId) {
+    if (isAuthenticated && activeSessionId) {
       try {
         await historyAPI.saveCode(activeSessionId, code);
       } catch (err) {
@@ -85,7 +87,7 @@ export const SandboxPage = ({ onBackToHome }) => {
     <div className="flex h-screen bg-gray-900 text-white font-sans overflow-hidden relative">
       
       {/* 1. Backdrop Overlay (Hanya muncul di Mobile jika sidebar dibuka) */}
-      {isSidebarOpen && (
+      {isAuthenticated && isSidebarOpen && (
         <div 
           className="fixed inset-0 bg-black/60 z-30 md:hidden transition-opacity duration-300"
           onClick={() => setIsSidebarOpen(false)}
@@ -93,17 +95,19 @@ export const SandboxPage = ({ onBackToHome }) => {
       )}
 
       {/* 2. Sidebar Kiri (Riwayat Sesi Chat & Akun) */}
-      <div className={`fixed inset-y-0 left-0 z-40 transform ${
-        isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } md:relative md:translate-x-0 transition-transform duration-300 ease-in-out`}>
-        <HistorySidebar 
-          sessions={sessions}
-          activeSessionId={activeSessionId}
-          onSelectSession={handleSelectSession}
-          onCreateSession={handleCreateSession}
-          onDeleteSession={(id) => deleteSession(id, setCode)}
-        />
-      </div>
+      {isAuthenticated && (
+        <div className={`fixed inset-y-0 left-0 z-40 transform ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } md:relative md:translate-x-0 transition-transform duration-300 ease-in-out`}>
+          <HistorySidebar 
+            sessions={sessions}
+            activeSessionId={activeSessionId}
+            onSelectSession={handleSelectSession}
+            onCreateSession={handleCreateSession}
+            onDeleteSession={(id) => deleteSession(id, setCode)}
+          />
+        </div>
+      )}
 
       {/* 3. Konten Utama Workspace */}
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
@@ -122,6 +126,8 @@ export const SandboxPage = ({ onBackToHome }) => {
             variables={variables}
             onBackToHome={handleBackToHome}
             onToggleSidebar={() => setIsSidebarOpen(prev => !prev)}
+            isAuthenticated={isAuthenticated}
+            onGoToAuth={onGoToAuth}
           />
 
           {/* Chat Panel */}
@@ -133,11 +139,15 @@ export const SandboxPage = ({ onBackToHome }) => {
             isLoading={isLoading}
             onSendMessage={() => sendMessage(code, consoleOutput)}
             onResetChat={async () => {
-              if (activeSessionId) {
+              if (isAuthenticated && activeSessionId) {
                 // Untuk reset chat di DB, kita hapus lalu buat sesi baru
                 await deleteSession(activeSessionId, setCode);
+              } else {
+                // Untuk guest, cukup bersihkan chat history di hook
+                await deleteSession(null, setCode);
               }
             }}
+            isAuthenticated={isAuthenticated}
           />
 
         </div>

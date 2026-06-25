@@ -6,7 +6,7 @@ import { useAuth } from './hooks/useAuth';
 
 function App() {
   const { isAuthenticated, authLoading } = useAuth();
-  const [currentPage, setCurrentPage] = useState('home'); // 'home' | 'workspace'
+  const [currentPage, setCurrentPage] = useState('home'); // 'home' | 'workspace' | 'auth'
 
   // 1. Tampilkan layar loading saat verifikasi status login (session check)
   if (authLoading) {
@@ -18,18 +18,32 @@ function App() {
     );
   }
 
-  // 2. Tampilkan Halaman Login & Registrasi jika belum terautentikasi
-  if (!isAuthenticated) {
-    return <AuthPage />;
+  // 2. Tampilkan Halaman Login & Registrasi
+  if (currentPage === 'auth') {
+    return (
+      <AuthPage 
+        onLoginSuccess={() => setCurrentPage('workspace')} 
+        onBackToHome={() => setCurrentPage('home')} 
+      />
+    );
   }
 
-  // 3. Tampilkan aplikasi utama jika sudah terautentikasi
+  // 3. Tampilkan aplikasi utama
   if (currentPage === 'home') {
-    return <Homepage onLaunchApp={() => setCurrentPage('workspace')} />;
+    return (
+      <Homepage 
+        onLaunchApp={() => setCurrentPage('workspace')} 
+        onGoToAuth={() => setCurrentPage('auth')}
+      />
+    );
   }
 
-  return <SandboxPage onBackToHome={() => setCurrentPage('home')} />;
+  return (
+    <SandboxPage 
+      onBackToHome={() => setCurrentPage('home')} 
+      onGoToAuth={() => setCurrentPage('auth')}
+    />
+  );
 }
-
 
 export default App;

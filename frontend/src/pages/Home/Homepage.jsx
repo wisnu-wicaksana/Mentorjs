@@ -41,7 +41,7 @@ const renderTokens = (tokens, maxChars) => {
   });
 };
 
-export const Homepage = ({ onLaunchApp }) => {
+export const Homepage = ({ onLaunchApp, onGoToAuth }) => {
   const [codeCharCount, setCodeCharCount] = useState(0);
   const [userCharCount, setUserCharCount] = useState(0);
   const [showConsole, setShowConsole] = useState(false);
@@ -115,7 +115,7 @@ export const Homepage = ({ onLaunchApp }) => {
       <BackgroundEffect />
       
       {/* Header / Navigation */}
-      <Header onLaunchApp={onLaunchApp} />
+      <Header onLaunchApp={onLaunchApp} onGoToAuth={onGoToAuth} />
 
       {/* Hero Section */}
       <section className="relative pt-20 pb-16 sm:pb-24 lg:pt-28">

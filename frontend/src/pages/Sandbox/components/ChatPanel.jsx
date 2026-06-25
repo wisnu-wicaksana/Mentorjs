@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Bot, User, Send, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import { speak, stopSpeech } from '../../../utils/tts';
 
-export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessage, isLoading, onSendMessage, onResetChat }) => {
+export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessage, isLoading, onSendMessage, onResetChat, isAuthenticated }) => {
   
   // Custom markdown & code blocks parser to render AI responses cleanly
   const renderMessageText = (text) => {
@@ -179,6 +179,11 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
 
       {/* Input Chat Panel */}
       <form onSubmit={handleSubmit} className="p-2 sm:p-4 bg-slate-950 border-t border-gray-800 shrink-0">
+        {!isAuthenticated && (
+          <div className="mb-2 px-3 py-1.5 bg-slate-900/60 border border-amber-900/30 rounded-md text-[10px] text-amber-400/80 flex items-center justify-between select-none">
+            <span>Sesi tamu aktif. Riwayat percakapan tidak akan disimpan.</span>
+          </div>
+        )}
         <div className="flex items-center gap-1.5 sm:gap-2 bg-slate-900 border border-gray-800 rounded-lg p-1.5 sm:p-2 focus-within:border-violet-500/50 transition-colors">
           <input 
             type="text" 

@@ -3,7 +3,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { Sparkles, Mail, Lock, User, LogIn, UserPlus } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 
-export const AuthPage = () => {
+export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
   const { login, register } = useAuth();
   const [isLoginTab, setIsLoginTab] = useState(true);
   
@@ -25,7 +25,9 @@ export const AuthPage = () => {
     if (isLoginTab) {
       // Panggil aksi login
       const result = await login(email, password);
-      if (!result.success) {
+      if (result.success) {
+        if (onLoginSuccess) onLoginSuccess();
+      } else {
         setErrorMsg(result.message);
         setLoading(false);
       }
@@ -37,7 +39,9 @@ export const AuthPage = () => {
         return;
       }
       const result = await register(username, email, password);
-      if (!result.success) {
+      if (result.success) {
+        if (onLoginSuccess) onLoginSuccess();
+      } else {
         setErrorMsg(result.message);
         setLoading(false);
       }
@@ -182,6 +186,18 @@ export const AuthPage = () => {
           </Button>
 
         </form>
+
+        {onBackToHome && (
+          <div className="mt-4 text-center">
+            <button
+              type="button"
+              onClick={onBackToHome}
+              className="text-xs text-gray-500 hover:text-violet-400 transition-colors cursor-pointer select-none"
+            >
+              &larr; Kembali ke Beranda
+            </button>
+          </div>
+        )}
 
       </div>
       

@@ -4,7 +4,7 @@ import Editor from '@monaco-editor/react';
 import { TEMPLATES } from '../../../constants/templates';
 import { Badge } from '../../../components/ui/Badge';
 
-export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, clearConsole, variables, onBackToHome, onToggleSidebar }) => {
+export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, clearConsole, variables, onBackToHome, onToggleSidebar, isAuthenticated, onGoToAuth }) => {
   const [bottomTab, setBottomTab] = useState('console'); // 'console' | 'inspector'
 
   const exportCode = () => {
@@ -23,13 +23,15 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
       {/* Header Panel Editor */}
       <div className="p-3 sm:p-4 bg-slate-950 border-b border-gray-800 flex justify-between items-center select-none gap-2 sm:gap-4">
         <div className="flex items-center gap-2 sm:gap-3">
-          <button 
-            onClick={onToggleSidebar}
-            className="p-1 rounded bg-slate-900 border border-gray-800 text-gray-400 hover:text-gray-200 cursor-pointer flex items-center justify-center mr-1"
-            title="Toggle Sesi Sidebar"
-          >
-            <Menu size={14} />
-          </button>
+          {isAuthenticated && (
+            <button 
+              onClick={onToggleSidebar}
+              className="p-1 rounded bg-slate-900 border border-gray-800 text-gray-400 hover:text-gray-200 cursor-pointer flex items-center justify-center mr-1"
+              title="Toggle Sesi Sidebar"
+            >
+              <Menu size={14} />
+            </button>
+          )}
           <button 
             onClick={onBackToHome}
             className="text-[10px] sm:text-xs font-bold text-violet-400 hover:text-violet-300 transition-colors mr-1 sm:mr-1.5 cursor-pointer flex items-center select-none"
@@ -51,6 +53,16 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
         </div>
         
         <div className="flex items-center gap-1.5 sm:gap-2">
+          {!isAuthenticated && (
+            <button 
+              type="button"
+              onClick={onGoToAuth}
+              className="bg-violet-950/40 hover:bg-violet-900/50 border border-violet-900/50 text-violet-300 hover:text-violet-200 px-2.5 py-2 sm:px-3 sm:py-2 rounded-md text-[10px] sm:text-xs font-bold transition-all cursor-pointer mr-1"
+            >
+              Masuk
+            </button>
+          )}
+          
           <button 
             onClick={exportCode}
             className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 border border-gray-800 text-gray-300 hover:text-white px-2.5 py-2 sm:px-3 sm:py-2 rounded-md text-[10px] sm:text-xs font-bold transition-all active:scale-95 cursor-pointer"

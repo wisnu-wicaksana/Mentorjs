@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { sendMentorMessage, historyAPI } from '../services/api';
+import { useAuth } from './useAuth';
 
 const DEFAULT_WELCOME_MESSAGE = {
   sender: 'mentor',
@@ -7,6 +8,7 @@ const DEFAULT_WELCOME_MESSAGE = {
 };
 
 export const useChat = () => {
+  const { isAuthenticated } = useAuth();
   const [sessions, setSessions] = useState([]);
   const [activeSessionId, setActiveSessionId] = useState(null);
   const [chatHistory, setChatHistory] = useState([DEFAULT_WELCOME_MESSAGE]);
@@ -15,6 +17,7 @@ export const useChat = () => {
 
   // 1. Memuat daftar sesi belajar dari database
   const loadSessions = useCallback(async () => {
+    if (!isAuthenticated) return [];
     try {
       const response = await historyAPI.getSessions();
       if (response.status === 'success') {
@@ -25,10 +28,11 @@ export const useChat = () => {
       console.error('Gagal mengambil daftar sesi:', err.message);
     }
     return [];
-  }, []);
+  }, [isAuthenticated]);
 
   // 2. Memilih & Memuat sesi belajar tertentu ke editor & chat
   const selectSession = useCallback(async (sessionId, onCodeLoaded) => {
+    if (!isAuthenticated) return;
     try {
       setIsLoading(true);
       setActiveSessionId(sessionId);
@@ -54,10 +58,11 @@ export const useChat = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   // 3. Membuat sesi baru
   const createSession = useCallback(async (initialCode = '', onCodeLoaded) => {
+    if (!isAuthenticated) return null;
     try {
       setIsLoading(true);
       const response = await historyAPI.createSession('Sesi Belajar Baru', initialCode);
@@ -82,10 +87,15 @@ export const useChat = () => {
       setIsLoading(false);
     }
     return null;
-  }, [loadSessions]);
+  }, [isAuthenticated, loadSessions]);
 
   // 4. Menghapus sesi belajar
   const deleteSession = useCallback(async (sessionId, onCodeLoaded) => {
+    if (!isAuthenticated) {
+      resetChat();
+      if (onCodeLoaded) onCodeLoaded('');
+      return;
+    }
     try {
       const response = await historyAPI.deleteSession(sessionId);
       if (response.status === 'success') {
@@ -107,7 +117,7 @@ export const useChat = () => {
     } catch (err) {
       console.error('Gagal menghapus sesi:', err.message);
     }
-  }, [activeSessionId, loadSessions, selectSession]);
+  }, [isAuthenticated, activeSessionId, loadSessions, selectSession]);
 
   // 5. Mengirim Pesan Chat & Menyimpannya ke DB secara Transaksional
   const sendMessage = async (code, consoleOutput) => {
@@ -140,7 +150,7 @@ export const useChat = () => {
         code, 
         lastErrors || null, 
         chatHistory, 
-        activeSessionId
+        isAuthenticated ? activeSessionId : null
       );
 
       if (result.status === 'success') {
@@ -148,7 +158,9 @@ export const useChat = () => {
         
         // Muat ulang daftar sesi karena judul sesi mungkin otomatis berubah 
         // dari "Sesi Belajar Baru" menjadi ringkasan pesan pertama user
-        await loadSessions();
+        if (isAuthenticated) {
+          await loadSessions();
+        }
       } else {
         throw new Error("Gagal mengambil respon mentor");
       }
