@@ -91,7 +91,7 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
           onChange={(value) => setCode(value || '')}
           theme="vs-dark"
           options={{
-            fontSize: 14,
+            fontSize: 16,
             minimap: { enabled: false },
             wordWrap: 'on',
             automaticLayout: true,
