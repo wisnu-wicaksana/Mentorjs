@@ -5,7 +5,7 @@ import { AuthPage } from './pages/Auth/AuthPage';
 import { useAuth } from './hooks/useAuth';
 
 function App() {
-  const { isAuthenticated, authLoading } = useAuth();
+  const { authLoading } = useAuth();
   const [currentPage, setCurrentPage] = useState('home'); // 'home' | 'workspace' | 'auth'
 
   // 1. Tampilkan layar loading saat verifikasi status login (session check)
