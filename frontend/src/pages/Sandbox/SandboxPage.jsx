@@ -31,8 +31,11 @@ export const SandboxPage = ({ onBackToHome, onGoToAuth }) => {
 
   // 1. Inisialisasi sesi belajar saat SandboxPage dipasang
   useEffect(() => {
+    let active = true;
     const initWorkspace = async () => {
       const list = await loadSessions();
+      if (!active) return;
+      
       if (list && list.length > 0) {
         // Load sesi paling terakhir diupdate
         await selectSession(list[0].id, setCode);
@@ -42,6 +45,10 @@ export const SandboxPage = ({ onBackToHome, onGoToAuth }) => {
       }
     };
     initWorkspace();
+    
+    return () => {
+      active = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
