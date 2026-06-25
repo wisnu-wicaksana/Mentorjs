@@ -25,6 +25,27 @@ const authenticateToken = (req, res, next) => {
   }
 };
 
+// Middleware opsional: Tidak memblokir request jika pengguna belum login
+const optionalAuthenticateToken = (req, res, next) => {
+  const token = req.cookies.token;
+
+  if (!token) {
+    // Lanjutkan request sebagai tamu (guest) tanpa req.user
+    return next();
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded; // Attach data user jika token terbukti valid
+    next();
+  } catch (error) {
+    // Abaikan token yang expired/tidak valid, lanjut sebagai tamu
+    console.warn('Token opsional tidak valid:', error.message);
+    next();
+  }
+};
+
 module.exports = {
   authenticateToken,
+  optionalAuthenticateToken
 };

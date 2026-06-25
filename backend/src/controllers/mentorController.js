@@ -21,46 +21,52 @@ const getMentorResponse = async (req, res) => {
       history
     );
 
-    // Penyimpanan riwayat chat secara otomatis jika ada sessionId aktif
-    if (sessionId) {
+    // Penyimpanan riwayat chat secara otomatis jika ada sessionId aktif dan pengguna telah login
+    if (sessionId && req.user) {
       try {
-        // Cek judul sesi saat ini
-        const activeSession = await prisma.session.findUnique({
-          where: { id: sessionId },
+        // Cek judul sesi saat ini dan pastikan sesi milik user yang sedang aktif
+        const activeSession = await prisma.session.findFirst({
+          where: { 
+            id: sessionId,
+            userId: req.user.id // Keamanan data: pastikan session milik user yang login
+          },
           select: { title: true }
         });
 
-        // Jika judul sesi masih default, ubah menjadi potongan pesan pertama user
-        let updatedTitle = undefined;
-        if (activeSession && activeSession.title === 'Sesi Belajar Baru' && message) {
-          updatedTitle = message.length > 35 ? message.substring(0, 32) + '...' : message;
-        }
+        // Hanya jalankan jika sesi ditemukan dan valid milik user ini
+        if (activeSession) {
+          // Jika judul sesi masih default, ubah menjadi potongan pesan pertama user
+          let updatedTitle = undefined;
+          if (activeSession.title === 'Sesi Belajar Baru' && message) {
+            updatedTitle = message.length > 35 ? message.substring(0, 32) + '...' : message;
+          }
 
-        // Jalankan query simpan & update secara transaksional agar konsisten
-        await prisma.$transaction([
-          prisma.message.create({
-            data: {
-              sessionId,
-              sender: 'user',
-              text: message || '[Mengirimkan perubahan kode editor]'
-            }
-          }),
-          prisma.message.create({
-            data: {
-              sessionId,
-              sender: 'mentor',
-              text: reply
-            }
-          }),
-          prisma.session.update({
-            where: { id: sessionId },
-            data: {
-              lastSavedCode: currentCode || '',
-              ...(updatedTitle && { title: updatedTitle }),
-              updatedAt: new Date()
-            }
-          })
-        ]);
+          // Jalankan query simpan & update secara transaksional agar konsisten
+          await prisma.$transaction([
+            prisma.message.create({
+              data: {
+                sessionId,
+                sender: 'user',
+                text: message || '[Mengirimkan perubahan kode editor]'
+              }
+            }),
+            prisma.message.create({
+              data: {
+                sessionId,
+                sender: 'mentor',
+                text: reply
+              }
+            }),
+            prisma.session.update({
+              where: { id: sessionId },
+              data: {
+                lastSavedCode: currentCode || '',
+                ...(updatedTitle && { title: updatedTitle }),
+                updatedAt: new Date()
+              }
+            })
+          ]);
+        }
       } catch (dbError) {
         console.error("Gagal menyimpan percakapan ke database:", dbError.message);
         // Tetap lanjutkan pengiriman respon meskipun gagal mencatat di DB
