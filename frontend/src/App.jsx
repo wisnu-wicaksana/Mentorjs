@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Homepage } from './pages/Home/Homepage';
 import { SandboxPage } from './pages/Sandbox/SandboxPage';
 import { AuthPage } from './pages/Auth/AuthPage';
@@ -6,7 +6,13 @@ import { useAuth } from './hooks/useAuth';
 
 function App() {
   const { authLoading } = useAuth();
-  const [currentPage, setCurrentPage] = useState('home'); // 'home' | 'workspace' | 'auth'
+  const [currentPage, setCurrentPage] = useState(() => {
+    return localStorage.getItem('currentPage') || 'home';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('currentPage', currentPage);
+  }, [currentPage]);
 
   // 1. Tampilkan layar loading saat verifikasi status login (session check)
   if (authLoading) {
