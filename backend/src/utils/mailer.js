@@ -8,16 +8,22 @@ const sendOTPEmail = async (email, otp) => {
   const smtpPass = process.env.SMTP_PASS || '';
   const smtpFrom = process.env.SMTP_FROM || '"MentorJS Admin" <no-reply@mentorjs.com>';
 
-  // Selalu tampilkan OTP di konsol server sebagai fallback utama (sangat berguna untuk development/testing!)
-  console.log('\n==================================================');
-  console.log('                 VERIFIKASI EMAIL                 ');
-  console.log(` Ke Email : ${email}`);
-  console.log(` Kode OTP : ${otp}`);
-  console.log('==================================================\n');
+  // Hanya tampilkan OTP di konsol server jika di lingkungan development/testing (bukan production)
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('\n==================================================');
+    console.log('                 VERIFIKASI EMAIL                 ');
+    console.log(` Ke Email : ${email}`);
+    console.log(` Kode OTP : ${otp}`);
+    console.log('==================================================\n');
+  }
 
-  // Jika tidak ada kredensial SMTP yang terkonfigurasi di .env, kita cukup cetak di log saja
+  // Jika tidak ada kredensial SMTP yang terkonfigurasi di .env, kita cukup cetak di log saja (hanya jika bukan production)
   if (!smtpUser || !smtpPass) {
-    console.log('[MAILER] Kredensial SMTP tidak lengkap di file .env. Kode OTP hanya dicetak ke terminal.');
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[MAILER] Kredensial SMTP tidak terkonfigurasi! Gagal mengirim email verifikasi di production.');
+      return { success: false, error: 'SMTP tidak terkonfigurasi.' };
+    }
+    console.log('[MAILER] Kredensial SMTP tidak lengkap di file .env. Kode OTP dicetak ke terminal karena bukan production.');
     return { success: true, message: 'OTP dicetak ke terminal.' };
   }
 
