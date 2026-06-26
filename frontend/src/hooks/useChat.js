@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { sendMentorMessage, historyAPI } from '../services/api';
 import { useAuth } from './useAuth';
 
@@ -14,6 +14,20 @@ export const useChat = () => {
   const [chatHistory, setChatHistory] = useState([DEFAULT_WELCOME_MESSAGE]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Reset state ketika user logout (transisi ke mode tamu)
+  const isFirstMount = useRef(true);
+  useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
+    if (!isAuthenticated) {
+      setSessions([]);
+      setActiveSessionId(null);
+      setChatHistory([DEFAULT_WELCOME_MESSAGE]);
+    }
+  }, [isAuthenticated]);
 
   // 1. Memuat daftar sesi belajar dari database
   const loadSessions = useCallback(async () => {

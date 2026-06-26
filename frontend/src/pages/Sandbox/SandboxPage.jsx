@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useCodeRunner } from '../../hooks/useCodeRunner';
 import { useChat } from '../../hooks/useChat';
 import { EditorPanel } from './components/EditorPanel';
@@ -51,6 +51,21 @@ export const SandboxPage = ({ onBackToHome, onGoToAuth }) => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // 1.5. Reset workspace state ketika user logout (transisi ke mode tamu)
+  const DEFAULT_CODE = `// Write JavaScript code here\nconst mentor = "MentorJS";\nconsole.log("Hello from " + mentor + "!");`;
+  const isFirstMount = useRef(true);
+  useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
+    if (!isAuthenticated) {
+      setCode(DEFAULT_CODE);
+      clearConsole();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]);
 
   // 2. Handler Pindah Sesi (Auto-save kode sesi lama sebelum pindah)
   const handleSelectSession = async (sessionId) => {
