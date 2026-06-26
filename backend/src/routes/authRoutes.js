@@ -9,6 +9,12 @@ router.post('/register', authController.registerUser);
 // Route login pengguna
 router.post('/login', authController.loginUser);
 
+// Route verifikasi OTP
+router.post('/verify-otp', authController.verifyOTP);
+
+// Route kirim ulang OTP
+router.post('/resend-otp', authController.resendOTP);
+
 // Route logout pengguna
 router.post('/logout', authenticateToken, authController.logoutUser);
 

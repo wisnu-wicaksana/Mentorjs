@@ -45,6 +45,8 @@ export const AuthProvider = ({ children }) => {
         setUser(response.data);
         setIsAuthenticated(true);
         return { success: true };
+      } else if (response.status === 'unverified') {
+        return { success: false, unverified: true, email: response.email, message: response.message };
       }
       return { success: false, message: response.message };
     } catch (error) {
@@ -61,6 +63,8 @@ export const AuthProvider = ({ children }) => {
         setUser(response.data);
         setIsAuthenticated(true);
         return { success: true };
+      } else if (response.status === 'unverified') {
+        return { success: false, unverified: true, email: response.email, message: response.message };
       }
       return { success: false, message: response.message };
     } catch (error) {
@@ -81,8 +85,38 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // 5. Fungsi Verifikasi OTP
+  const verifyOTP = async (email, otpCode) => {
+    try {
+      const response = await authAPI.verifyOTP(email, otpCode);
+      if (response.status === 'success') {
+        setUser(response.data);
+        setIsAuthenticated(true);
+        return { success: true };
+      }
+      return { success: false, message: response.message };
+    } catch (error) {
+      const msg = error.response?.data?.message || 'Kode OTP salah atau telah kedaluwarsa.';
+      return { success: false, message: msg };
+    }
+  };
+
+  // 6. Fungsi Kirim Ulang OTP
+  const resendOTP = async (email) => {
+    try {
+      const response = await authAPI.resendOTP(email);
+      if (response.status === 'success') {
+        return { success: true, message: response.message };
+      }
+      return { success: false, message: response.message };
+    } catch (error) {
+      const msg = error.response?.data?.message || 'Gagal mengirim ulang OTP.';
+      return { success: false, message: msg };
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, authLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, authLoading, login, register, logout, verifyOTP, resendOTP }}>
       {children}
     </AuthContext.Provider>
   );
