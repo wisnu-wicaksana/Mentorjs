@@ -2,31 +2,31 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const prisma = require('../config/db');
 
-// Fungsi pembantu untuk membuat JWT Token
+// Helper function to generate JWT Token
 const generateToken = (res, userId) => {
   const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
-    expiresIn: '7d', // Token berlaku selama 7 hari
+    expiresIn: '7d', // Token valid for 7 days
   });
 
-  // Set token di dalam cookie HTTP-Only yang aman
+  // Set token inside a secure HTTP-Only cookie
   res.cookie('token', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', // Hanya kirim lewat HTTPS jika di production
+    secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
     sameSite: 'strict',
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 hari dalam milidetik
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
   });
 };
 
-// 1. Registrasi Akun Baru
+// 1. Register New Account
 const registerUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
     if (!username || !email || !password) {
-      return res.status(400).json({ status: 'error', message: 'Semua kolom input (Nama Pengguna, Email, dan Kata Sandi) wajib diisi.' });
+      return res.status(400).json({ status: 'error', message: 'All fields (Username, Email, and Password) are required.' });
     }
 
-    // Cek apakah email atau username sudah terdaftar
+    // Check if email or username is already registered
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [{ email }, { username }],
@@ -34,11 +34,10 @@ const registerUser = async (req, res) => {
     });
 
     if (existingUser) {
-      // Jika user terdaftar tapi belum diverifikasi, kita perbarui OTP-nya dan kirim ulang
+      // If user registered but not verified yet, renew OTP and resend
       if (!existingUser.isVerified) {
-        // Generate new OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6 digit string
-        const otpExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 menit
+        const otpExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 mins
         
         await prisma.user.update({
           where: { id: existingUser.id },
@@ -49,18 +48,18 @@ const registerUser = async (req, res) => {
         });
         
         const { sendOTPEmail } = require('../utils/mailer');
-        await sendOTPEmail(email, otp);
+        await sendOTPEmail(email, otp, 'verify');
         
         return res.status(200).json({
           status: 'unverified',
-          message: 'Username/Email ini belum diverifikasi. Kode OTP baru telah dikirim.',
+          message: 'This email/username is not verified yet. A new verification OTP code has been sent.',
           email: existingUser.email,
         });
       }
       
       return res.status(400).json({ 
         status: 'error', 
-        message: 'Alamat email atau nama pengguna ini sudah digunakan. Silakan gunakan email lain, atau silakan masuk ke akun Anda.' 
+        message: 'Email address or username is already in use. Please try a different email or sign in to your account.' 
       });
     }
 
@@ -70,9 +69,9 @@ const registerUser = async (req, res) => {
 
     // Generate 6 digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 menit
+    const otpExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 mins
 
-    // Simpan user baru ke database (dengan isVerified: false)
+    // Create unverified user
     const newUser = await prisma.user.create({
       data: {
         username,
@@ -84,50 +83,49 @@ const registerUser = async (req, res) => {
       },
     });
 
-    // Kirim email verifikasi OTP
+    // Send verification email
     const { sendOTPEmail } = require('../utils/mailer');
-    await sendOTPEmail(email, otp);
+    await sendOTPEmail(email, otp, 'verify');
 
     res.status(201).json({
       status: 'unverified',
-      message: 'Registrasi berhasil! Kode OTP verifikasi telah dikirim ke email Anda.',
+      message: 'Registration successful! A verification OTP has been sent to your email.',
       email: newUser.email,
     });
   } catch (error) {
-    console.error('Error di registerUser:', error);
-    res.status(500).json({ status: 'error', message: 'Gagal melakukan registrasi: ' + error.message });
+    console.error('Error in registerUser:', error);
+    res.status(500).json({ status: 'error', message: 'Failed to register: ' + error.message });
   }
 };
 
-// 2. Login Pengguna
+// 2. User Sign In
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ status: 'error', message: 'Alamat email dan kata sandi wajib diisi untuk masuk.' });
+      return res.status(400).json({ status: 'error', message: 'Email address and password are required to sign in.' });
     }
 
-    // Cari user berdasarkan email
+    // Find user by email
     const user = await prisma.user.findUnique({
       where: { email },
     });
 
     if (!user) {
-      return res.status(401).json({ status: 'error', message: `Alamat email "${email}" belum terdaftar. Silakan periksa kembali penulisan email Anda, atau pilih tab "Daftar" untuk membuat akun baru.` });
+      return res.status(401).json({ status: 'error', message: `The email address "${email}" is not registered. Please verify your spelling or select the "Sign Up" tab to create a new account.` });
     }
 
-    // Validasi password
+    // Validate password
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
-      return res.status(401).json({ status: 'error', message: 'Kata sandi yang Anda masukkan salah. Periksa kembali tombol Caps Lock dan coba lagi.' });
+      return res.status(401).json({ status: 'error', message: 'The password you entered is incorrect. Please verify your Caps Lock key and try again.' });
     }
 
-    // Cek apakah akun sudah terverifikasi
+    // Check verification status
     if (!user.isVerified) {
-      // Generate OTP baru
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
-      const otpExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 menit
+      const otpExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 mins
 
       await prisma.user.update({
         where: { id: user.id },
@@ -137,18 +135,17 @@ const loginUser = async (req, res) => {
         },
       });
 
-      // Kirim email verifikasi OTP
       const { sendOTPEmail } = require('../utils/mailer');
-      await sendOTPEmail(user.email, otp);
+      await sendOTPEmail(user.email, otp, 'verify');
 
       return res.status(200).json({
         status: 'unverified',
-        message: 'Email Anda belum diverifikasi. Kode OTP baru telah dikirim ke email Anda.',
+        message: 'Your email address is not verified yet. A new OTP code has been sent to your email.',
         email: user.email,
       });
     }
 
-    // Buat token JWT dan pasang di cookie
+    // Issue JWT and cookie
     generateToken(res, user.id);
 
     res.json({
@@ -160,21 +157,21 @@ const loginUser = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Error di loginUser:', error);
-    res.status(500).json({ status: 'error', message: 'Gagal melakukan login: ' + error.message });
+    console.error('Error in loginUser:', error);
+    res.status(500).json({ status: 'error', message: 'Failed to sign in: ' + error.message });
   }
 };
 
-// 3. Logout Pengguna (Menghapus Cookie)
+// 3. User Sign Out
 const logoutUser = (req, res) => {
   res.cookie('token', '', {
     httpOnly: true,
-    expires: new Date(0), // Set tanggal kedaluwarsa ke masa lalu agar terhapus
+    expires: new Date(0), // Set date to past to delete cookie
   });
-  res.json({ status: 'success', message: 'Berhasil keluar (logout).' });
+  res.json({ status: 'success', message: 'Successfully signed out.' });
 };
 
-// 4. Dapatkan Profil User Saat Ini (Melalui Cookie valid)
+// 4. Retrieve Current User Profile
 const getUserProfile = async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
@@ -188,7 +185,7 @@ const getUserProfile = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ status: 'error', message: 'User tidak ditemukan.' });
+      return res.status(404).json({ status: 'error', message: 'User not found.' });
     }
 
     res.json({
@@ -196,18 +193,18 @@ const getUserProfile = async (req, res) => {
       data: user,
     });
   } catch (error) {
-    console.error('Error di getUserProfile:', error);
-    res.status(500).json({ status: 'error', message: 'Gagal memuat profil: ' + error.message });
+    console.error('Error in getUserProfile:', error);
+    res.status(500).json({ status: 'error', message: 'Failed to load profile: ' + error.message });
   }
 };
 
-// 5. Verifikasi OTP
+// 5. Verify OTP
 const verifyOTP = async (req, res) => {
   try {
     const { email, otpCode } = req.body;
 
     if (!email || !otpCode) {
-      return res.status(400).json({ status: 'error', message: 'Alamat email dan 6 digit kode OTP wajib diisi.' });
+      return res.status(400).json({ status: 'error', message: 'Email address and the 6-digit OTP code are required.' });
     }
 
     const user = await prisma.user.findUnique({
@@ -215,15 +212,14 @@ const verifyOTP = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ status: 'error', message: 'Email tidak terdaftar.' });
+      return res.status(404).json({ status: 'error', message: 'Email address is not registered.' });
     }
 
     if (user.isVerified) {
-      // Jika sudah terverifikasi, langsung berikan token
       generateToken(res, user.id);
       return res.json({
         status: 'success',
-        message: 'Email sudah terverifikasi.',
+        message: 'Email address is already verified.',
         data: {
           id: user.id,
           username: user.username,
@@ -232,17 +228,17 @@ const verifyOTP = async (req, res) => {
       });
     }
 
-    // Cek kecocokan OTP
+    // Verify OTP Match
     if (user.otpCode !== otpCode) {
-      return res.status(400).json({ status: 'error', message: 'Kode OTP yang Anda masukkan salah. Periksa kembali pesan di kotak masuk email Anda (atau log terminal).' });
+      return res.status(400).json({ status: 'error', message: 'The verification code you entered is incorrect. Please check your inbox (or terminal console log).' });
     }
 
-    // Cek kedaluwarsa OTP
+    // Check Expiration
     if (new Date() > new Date(user.otpExpires)) {
-      return res.status(400).json({ status: 'error', message: 'Kode OTP telah kedaluwarsa karena melebihi batas waktu 15 menit. Silakan klik "Kirim Ulang OTP" untuk mendapatkan kode baru.' });
+      return res.status(400).json({ status: 'error', message: 'The OTP code has expired. Please click "Resend OTP" to request a new verification code.' });
     }
 
-    // Update status user ke verified
+    // Update user to verified
     const updatedUser = await prisma.user.update({
       where: { id: user.id },
       data: {
@@ -252,12 +248,11 @@ const verifyOTP = async (req, res) => {
       },
     });
 
-    // Buat token JWT dan pasang di cookie
     generateToken(res, updatedUser.id);
 
     res.json({
       status: 'success',
-      message: 'Verifikasi berhasil! Selamat datang di MentorJS.',
+      message: 'Verification successful! Welcome to MentorJS.',
       data: {
         id: updatedUser.id,
         username: updatedUser.username,
@@ -265,18 +260,18 @@ const verifyOTP = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Error di verifyOTP:', error);
-    res.status(500).json({ status: 'error', message: 'Gagal melakukan verifikasi OTP: ' + error.message });
+    console.error('Error in verifyOTP:', error);
+    res.status(500).json({ status: 'error', message: 'Failed to verify OTP: ' + error.message });
   }
 };
 
-// 6. Kirim Ulang OTP
+// 6. Resend OTP
 const resendOTP = async (req, res) => {
   try {
     const { email } = req.body;
 
     if (!email) {
-      return res.status(400).json({ status: 'error', message: 'Email harus diisi.' });
+      return res.status(400).json({ status: 'error', message: 'Email address is required.' });
     }
 
     const user = await prisma.user.findUnique({
@@ -284,16 +279,16 @@ const resendOTP = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ status: 'error', message: 'Email tidak ditemukan.' });
+      return res.status(404).json({ status: 'error', message: 'Email address not found.' });
     }
 
     if (user.isVerified) {
-      return res.status(400).json({ status: 'error', message: 'Email ini sudah terverifikasi.' });
+      return res.status(400).json({ status: 'error', message: 'Email address is already verified.' });
     }
 
     // Generate new OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 menit
+    const otpExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 mins
 
     await prisma.user.update({
       where: { id: user.id },
@@ -303,17 +298,112 @@ const resendOTP = async (req, res) => {
       },
     });
 
-    // Kirim email verifikasi OTP
+    // Send verification email
     const { sendOTPEmail } = require('../utils/mailer');
-    await sendOTPEmail(user.email, otp);
+    await sendOTPEmail(user.email, otp, 'verify');
 
     res.json({
       status: 'success',
-      message: 'Kode OTP baru telah dikirim ke email Anda.',
+      message: 'A new verification OTP code has been sent to your email.',
     });
   } catch (error) {
-    console.error('Error di resendOTP:', error);
-    res.status(500).json({ status: 'error', message: 'Gagal mengirim ulang OTP: ' + error.message });
+    console.error('Error in resendOTP:', error);
+    res.status(500).json({ status: 'error', message: 'Failed to resend OTP: ' + error.message });
+  }
+};
+
+// 7. Request Password Reset OTP
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ status: 'error', message: 'Email address is required.' });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return res.status(404).json({ status: 'error', message: 'User with this email address was not found.' });
+    }
+
+    // Generate reset OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 mins
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        otpCode: otp,
+        otpExpires,
+      },
+    });
+
+    // Send Reset Email
+    const { sendOTPEmail } = require('../utils/mailer');
+    await sendOTPEmail(user.email, otp, 'reset');
+
+    res.json({
+      status: 'success',
+      message: 'A password reset OTP code has been sent to your email.',
+    });
+  } catch (error) {
+    console.error('Error in forgotPassword:', error);
+    res.status(500).json({ status: 'error', message: 'Failed to process request: ' + error.message });
+  }
+};
+
+// 8. Verify OTP & Reset Password
+const resetPassword = async (req, res) => {
+  try {
+    const { email, otpCode, newPassword } = req.body;
+
+    if (!email || !otpCode || !newPassword) {
+      return res.status(400).json({ status: 'error', message: 'Email address, OTP code, and new password are required.' });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return res.status(404).json({ status: 'error', message: 'User with this email address was not found.' });
+    }
+
+    // Verify OTP Match
+    if (user.otpCode !== otpCode) {
+      return res.status(400).json({ status: 'error', message: 'The verification code you entered is incorrect. Please check your email.' });
+    }
+
+    // Check Expiration
+    if (new Date() > new Date(user.otpExpires)) {
+      return res.status(400).json({ status: 'error', message: 'The verification code has expired. Please request a new code.' });
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Save password, clear OTP, auto verify
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        otpCode: null,
+        otpExpires: null,
+        isVerified: true,
+      },
+    });
+
+    res.json({
+      status: 'success',
+      message: 'Password reset successful! You can now sign in with your new password.',
+    });
+  } catch (error) {
+    console.error('Error in resetPassword:', error);
+    res.status(500).json({ status: 'error', message: 'Failed to reset password: ' + error.message });
   }
 };
 
@@ -324,4 +414,6 @@ module.exports = {
   getUserProfile,
   verifyOTP,
   resendOTP,
+  forgotPassword,
+  resetPassword,
 };

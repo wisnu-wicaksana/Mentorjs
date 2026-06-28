@@ -15,6 +15,12 @@ router.post('/verify-otp', authController.verifyOTP);
 // Route kirim ulang OTP
 router.post('/resend-otp', authController.resendOTP);
 
+// Route request reset password OTP
+router.post('/forgot-password', authController.forgotPassword);
+
+// Route verify reset password OTP & update password
+router.post('/reset-password', authController.resetPassword);
+
 // Route logout pengguna
 router.post('/logout', authenticateToken, authController.logoutUser);
 

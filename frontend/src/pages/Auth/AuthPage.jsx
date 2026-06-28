@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { authAPI } from '../../services/api';
 import { Sparkles, Mail, Lock, User, LogIn, UserPlus, Eye, EyeOff } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { BackgroundEffect } from '../../components/ui/BackgroundEffect';
@@ -24,6 +25,74 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // States untuk Forgot Password
+  const [isForgotPasswordMode, setIsForgotPasswordMode] = useState(false);
+  const [forgotStep, setForgotStep] = useState('email'); // 'email' | 'otp'
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotOtpCode, setForgotOtpCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+
+  // Penanganan Lupa Kata Sandi
+  const handleForgotPasswordSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMsg('');
+    setSuccessMsg('');
+    setLoading(true);
+
+    if (forgotStep === 'email') {
+      try {
+        const result = await authAPI.forgotPassword(forgotEmail);
+        if (result.status === 'success') {
+          setSuccessMsg(result.message);
+          setForgotStep('otp');
+        } else {
+          setErrorMsg(result.message);
+        }
+      } catch (err) {
+        setErrorMsg(err.response?.data?.message || 'Failed to send verification code. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      // Validasi password kecocokan
+      if (newPassword.length < 6) {
+        setErrorMsg('Password must be at least 6 characters.');
+        setLoading(false);
+        return;
+      }
+      if (newPassword !== confirmNewPassword) {
+        setErrorMsg('Confirm password does not match. Please verify your password entries.');
+        setLoading(false);
+        return;
+      }
+      if (forgotOtpCode.trim().length !== 6) {
+        setErrorMsg('OTP code must be exactly 6 digits.');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const result = await authAPI.resetPassword(forgotEmail, forgotOtpCode, newPassword);
+        if (result.status === 'success') {
+          setSuccessMsg(result.message);
+          // Reset states and switch back to login mode after successful password reset
+          setIsForgotPasswordMode(false);
+          setForgotEmail('');
+          setForgotOtpCode('');
+          setNewPassword('');
+          setConfirmNewPassword('');
+        } else {
+          setErrorMsg(result.message);
+        }
+      } catch (err) {
+        setErrorMsg(err.response?.data?.message || 'Failed to reset password. Please check your verification code.');
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
 
   // Penanganan Submit Form (Login / Registrasi)
   const handleSubmit = async (e) => {
@@ -215,6 +284,152 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
               </button>
             </div>
           </form>
+        ) : isForgotPasswordMode ? (
+          /* FORM RESET PASSWORD (FORGOT PASSWORD FLOW) */
+          <form onSubmit={handleForgotPasswordSubmit} className="space-y-4">
+            {forgotStep === 'email' ? (
+              /* LANGKAH 1: MASUKKAN EMAIL */
+              <>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Email Address</label>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                      <Mail size={15} />
+                    </span>
+                    <input
+                      type="email"
+                      required
+                      value={forgotEmail}
+                      onChange={(e) => setForgotEmail(e.target.value)}
+                      placeholder="john@example.com"
+                      className="w-full bg-slate-950/80 border border-gray-800 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 pl-10 pr-4 py-2.5 rounded-lg text-xs text-white placeholder-gray-600 transition-all outline-none font-sans"
+                    />
+                  </div>
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full mt-2"
+                  size="lg"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <span>Sending...</span>
+                    </span>
+                  ) : (
+                    'Send Reset Code'
+                  )}
+                </Button>
+              </>
+            ) : (
+              /* LANGKAH 2: VERIFIKASI OTP DAN ATUR PASSWORD BARU */
+              <>
+                {/* OTP Code Input */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] uppercase font-bold tracking-wider text-gray-400 block text-center">
+                    Enter Reset OTP Code
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    maxLength={6}
+                    value={forgotOtpCode}
+                    onChange={(e) => setForgotOtpCode(e.target.value.replace(/\D/g, ''))}
+                    placeholder="123456"
+                    className="w-full bg-slate-950/80 border border-gray-800 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 py-3 rounded-lg text-lg xs:text-xl font-bold tracking-[0.5em] xs:tracking-[0.75em] text-center text-white placeholder-gray-800 transition-all outline-none font-mono"
+                  />
+                </div>
+
+                {/* New Password Input */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] uppercase font-bold tracking-wider text-gray-400">New Password</label>
+                  <div className="relative flex items-center">
+                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                      <Lock size={15} />
+                    </span>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full bg-slate-950/80 border border-gray-800 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 pl-10 pr-10 py-2.5 rounded-lg text-xs text-white placeholder-gray-600 transition-all outline-none font-sans"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(prev => !prev)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-violet-400 transition-colors cursor-pointer"
+                      title={showPassword ? "Hide Password" : "Show Password"}
+                    >
+                      {showPassword ? <Eye size={15} /> : <EyeOff size={15} />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Confirm New Password Input */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Confirm New Password</label>
+                  <div className="relative flex items-center">
+                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                      <Lock size={15} />
+                    </span>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={confirmNewPassword}
+                      onChange={(e) => setConfirmNewPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full bg-slate-950/80 border border-gray-800 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 pl-10 pr-10 py-2.5 rounded-lg text-xs text-white placeholder-gray-600 transition-all outline-none font-sans"
+                    />
+                     <button
+                      type="button"
+                      onClick={() => setShowPassword(prev => !prev)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-violet-400 transition-colors cursor-pointer"
+                      title={showPassword ? "Hide Password" : "Show Password"}
+                    >
+                      {showPassword ? <Eye size={15} /> : <EyeOff size={15} />}
+                    </button>
+                  </div>
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full mt-2"
+                  size="lg"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <span>Resetting...</span>
+                    </span>
+                  ) : (
+                    'Reset Password'
+                  )}
+                </Button>
+              </>
+            )}
+
+            <div className="text-center mt-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsForgotPasswordMode(false);
+                  setErrorMsg('');
+                  setSuccessMsg('');
+                  setForgotEmail('');
+                  setForgotOtpCode('');
+                  setNewPassword('');
+                  setConfirmNewPassword('');
+                }}
+                className="text-xs text-violet-400 hover:text-violet-300 font-semibold transition-colors cursor-pointer select-none"
+              >
+                Back to Sign In
+              </button>
+            </div>
+          </form>
         ) : (
           /* FORM LOGIN / REGISTRASI BIASA */
           <>
@@ -310,6 +525,23 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
                   </button>
                 </div>
               </div>
+
+              {isLoginTab && (
+                <div className="text-right">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsForgotPasswordMode(true);
+                      setForgotStep('email');
+                      setErrorMsg('');
+                      setSuccessMsg('');
+                    }}
+                    className="text-[10px] text-violet-400 hover:text-violet-300 font-semibold transition-colors cursor-pointer select-none"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
+              )}
 
               {/* Input Konfirmasi Password (Hanya untuk Register) */}
               {!isLoginTab && (

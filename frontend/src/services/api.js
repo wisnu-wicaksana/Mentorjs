@@ -40,6 +40,14 @@ export const authAPI = {
     const response = await apiClient.post('/auth/resend-otp', { email });
     return response.data;
   },
+  forgotPassword: async (email) => {
+    const response = await apiClient.post('/auth/forgot-password', { email });
+    return response.data;
+  },
+  resetPassword: async (email, otpCode, newPassword) => {
+    const response = await apiClient.post('/auth/reset-password', { email, otpCode, newPassword });
+    return response.data;
+  },
 };
 
 /**
