@@ -6,12 +6,48 @@ import { useAuth } from './hooks/useAuth';
 
 function App() {
   const { authLoading } = useAuth();
+  
+  // State halaman yang di-sinkronkan dengan Hash URL
   const [currentPage, setCurrentPage] = useState(() => {
+    const hash = window.location.hash.replace('#', '');
+    const validPages = ['home', 'auth', 'workspace'];
+    if (validPages.includes(hash)) return hash;
     return localStorage.getItem('currentPage') || 'home';
   });
 
+  // Fungsi helper untuk navigasi mengganti hash URL
+  const navigateTo = (page) => {
+    window.location.hash = '#' + page;
+  };
+
   useEffect(() => {
-    localStorage.setItem('currentPage', currentPage);
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '');
+      const validPages = ['home', 'auth', 'workspace'];
+      if (validPages.includes(hash)) {
+        setCurrentPage(hash);
+        localStorage.setItem('currentPage', hash);
+      } else {
+        // Fallback jika mengetik hash acak
+        window.location.hash = '#home';
+      }
+    };
+
+    // Dengarkan perubahan hash URL (tombol back/forward browser)
+    window.addEventListener('hashchange', handleHashChange);
+
+    // Setel hash awal jika kosong
+    const initialHash = window.location.hash.replace('#', '');
+    const validPages = ['home', 'auth', 'workspace'];
+    if (!validPages.includes(initialHash)) {
+      window.location.hash = '#' + currentPage;
+    } else {
+      localStorage.setItem('currentPage', initialHash);
+    }
+
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
   }, [currentPage]);
 
   // 1. Tampilkan layar loading saat verifikasi status login (session check)
@@ -28,8 +64,8 @@ function App() {
   if (currentPage === 'auth') {
     return (
       <AuthPage 
-        onLoginSuccess={() => setCurrentPage('workspace')} 
-        onBackToHome={() => setCurrentPage('home')} 
+        onLoginSuccess={() => navigateTo('workspace')} 
+        onBackToHome={() => navigateTo('home')} 
       />
     );
   }
@@ -38,16 +74,16 @@ function App() {
   if (currentPage === 'home') {
     return (
       <Homepage 
-        onLaunchApp={() => setCurrentPage('workspace')} 
-        onGoToAuth={() => setCurrentPage('auth')}
+        onLaunchApp={() => navigateTo('workspace')} 
+        onGoToAuth={() => navigateTo('auth')}
       />
     );
   }
 
   return (
     <SandboxPage 
-      onBackToHome={() => setCurrentPage('home')} 
-      onGoToAuth={() => setCurrentPage('auth')}
+      onBackToHome={() => navigateTo('home')} 
+      onGoToAuth={() => navigateTo('auth')}
     />
   );
 }
