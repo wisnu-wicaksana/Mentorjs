@@ -20,6 +20,7 @@ export const Header = ({ onLaunchApp, onGoToAuth }) => {
         <nav className="hidden sm:flex items-center gap-6 text-sm font-medium text-gray-400">
           <a href="#features" className="hover:text-white transition-colors">Features</a>
           <a href="#how-it-works" className="hover:text-white transition-colors">How it Works</a>
+          <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">

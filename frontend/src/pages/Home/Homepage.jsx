@@ -1,31 +1,19 @@
-import { useState, useEffect } from 'react';
-import { Code, Bot, Sparkles, Terminal, Volume2, ArrowRight } from 'lucide-react';
+import { useState } from 'react';
+import { Code, Bot, Sparkles, Terminal, Volume2, ArrowRight, ChevronDown } from 'lucide-react';
 import { BackgroundEffect } from '../../components/ui/BackgroundEffect';
 import { Button } from '../../components/ui/Button';
 import { MockupWindow } from '../../components/ui/MockupWindow';
 import { Header } from '../../components/layout/Header';
 import { Footer } from '../../components/layout/Footer';
 import { CodeMockup } from '../../components/ui/CodeMockup';
-import { totalCodeLength } from '../../constants/templates';
-
-// Token definition for User Mockup Question
-const userTokens = [
-  { text: "Why does the console print ", className: "text-gray-300" },
-  { text: "\"Victory!\"", className: "text-amber-300 font-semibold" },
-  { text: " in this code?", className: "text-gray-300" }
-];
-
-// Token definition for Chat Mockup Response
-const chatTokens = [
-  { text: "How does the ", className: "text-gray-300" },
-  { text: "if", className: "text-pink-400 font-semibold" },
-  { text: " block evaluate the condition? What is the role of ", className: "text-gray-300" },
-  { text: "isWinner", className: "text-violet-300 font-semibold" },
-  { text: " in this logic?", className: "text-gray-300" }
-];
-
-const totalUserLength = userTokens.reduce((sum, token) => sum + token.text.length, 0);
-const totalChatLength = chatTokens.reduce((sum, token) => sum + token.text.length, 0);
+import { useMockupAnimation } from '../../hooks/useMockupAnimation';
+import { 
+  userTokens, 
+  chatTokens, 
+  totalUserLength, 
+  totalChatLength, 
+  faqData 
+} from '../../constants/mockupData';
 
 const renderTokens = (tokens, maxChars) => {
   let charsLeft = maxChars;
@@ -42,73 +30,14 @@ const renderTokens = (tokens, maxChars) => {
 };
 
 export const Homepage = ({ onLaunchApp, onGoToAuth }) => {
-  const [codeCharCount, setCodeCharCount] = useState(0);
-  const [userCharCount, setUserCharCount] = useState(0);
-  const [showConsole, setShowConsole] = useState(false);
-  const [chatCharCount, setChatCharCount] = useState(0);
-  const [showMentor, setShowMentor] = useState(false);
-
-  useEffect(() => {
-    // Left-side first, then right-side mockup animation sequence
-    let timer;
-    let currentStage = 'typing-code'; // 'typing-code' | 'show-console' | 'typing-user' | 'send-user' | 'typing-chat' | 'pause-end'
-    let currentCodeCount = 0;
-    let currentUserCount = 0;
-    let currentChatCount = 0;
-
-    const run = () => {
-      if (currentStage === 'typing-code') {
-        if (currentCodeCount < totalCodeLength) {
-          currentCodeCount += 1;
-          setCodeCharCount(currentCodeCount);
-          timer = setTimeout(run, 30);
-        } else {
-          currentStage = 'show-console';
-          timer = setTimeout(run, 500);
-        }
-      } else if (currentStage === 'show-console') {
-        setShowConsole(true);
-        currentStage = 'typing-user';
-        timer = setTimeout(run, 800);
-      } else if (currentStage === 'typing-user') {
-        if (currentUserCount < totalUserLength) {
-          currentUserCount += 1;
-          setUserCharCount(currentUserCount);
-          timer = setTimeout(run, 35);
-        } else {
-          currentStage = 'send-user';
-          timer = setTimeout(run, 500);
-        }
-      } else if (currentStage === 'send-user') {
-        currentStage = 'typing-chat';
-        timer = setTimeout(run, 800);
-      } else if (currentStage === 'typing-chat') {
-        setShowMentor(true);
-        if (currentChatCount < totalChatLength) {
-          currentChatCount += 1;
-          setChatCharCount(currentChatCount);
-          timer = setTimeout(run, 45);
-        } else {
-          currentStage = 'pause-end';
-          timer = setTimeout(run, 5000);
-        }
-      } else if (currentStage === 'pause-end') {
-        currentCodeCount = 0;
-        currentUserCount = 0;
-        currentChatCount = 0;
-        setCodeCharCount(0);
-        setUserCharCount(0);
-        setChatCharCount(0);
-        setShowConsole(false);
-        setShowMentor(false);
-        currentStage = 'typing-code';
-        timer = setTimeout(run, 1000);
-      }
-    };
-
-    timer = setTimeout(run, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+  const [openFaqIndex, setOpenFaqIndex] = useState(null);
+  const {
+    codeCharCount,
+    userCharCount,
+    showConsole,
+    chatCharCount,
+    showMentor
+  } = useMockupAnimation();
 
   return (
     <div className="min-h-screen bg-slate-950 text-white font-sans selection:bg-violet-500/30 selection:text-violet-200 overflow-x-hidden relative">
@@ -341,6 +270,52 @@ export const Homepage = ({ onLaunchApp, onGoToAuth }) => {
               <span>Launch Sandbox Workspace</span>
               <ArrowRight size={16} />
             </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section id="faq" className="py-20 border-t border-gray-900 bg-slate-950/40 relative">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <div className="inline-flex items-center gap-1.5 bg-slate-900 border border-gray-800 px-3 py-1.5 rounded-full text-xs font-semibold text-violet-400 mb-4 select-none">
+              <Sparkles size={12} />
+              <span>FAQ</span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+              Pertanyaan yang Sering Diajukan
+            </h2>
+            <p className="mt-4 text-sm sm:text-base text-gray-400 leading-relaxed">
+              Punya pertanyaan seputar cara kerja platform MentorJS? Berikut adalah beberapa jawaban singkat untuk membantu Anda.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {faqData.map((faq, index) => (
+              <div 
+                key={index}
+                className="border border-gray-900 bg-slate-900/30 rounded-xl hover:border-violet-500/10 transition-all duration-300 overflow-hidden"
+              >
+                <button
+                  type="button"
+                  onClick={() => setOpenFaqIndex(openFaqIndex === index ? null : index)}
+                  className="w-full flex items-center justify-between text-left p-5 font-semibold text-sm sm:text-base select-none text-white hover:text-violet-400 transition-colors"
+                >
+                  <span>{faq.question}</span>
+                  <ChevronDown 
+                    size={16} 
+                    className={`text-gray-500 transition-transform duration-300 ${openFaqIndex === index ? 'rotate-180 text-violet-400' : ''}`}
+                  />
+                </button>
+                <div 
+                  className={`overflow-hidden transition-all duration-300 ease-in-out ${openFaqIndex === index ? 'max-h-48 opacity-100 border-t border-gray-900/50' : 'max-h-0 opacity-0'}`}
+                >
+                  <div className="p-5 text-xs sm:text-sm text-gray-400 leading-relaxed bg-slate-950/20">
+                    {faq.answer}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
