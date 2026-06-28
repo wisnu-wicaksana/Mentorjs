@@ -8,8 +8,13 @@ const sendOTPEmail = async (email, otp) => {
   const smtpPass = process.env.SMTP_PASS || '';
   const smtpFrom = process.env.SMTP_FROM || '"MentorJS Admin" <no-reply@mentorjs.com>';
 
-  // Hanya tampilkan OTP di konsol server jika di lingkungan development/testing 
-  if (process.env.NODE_ENV !== 'production') {
+  // Jika tidak ada kredensial SMTP yang terkonfigurasi di .env atau masih berupa placeholder bawaan
+  const isPlaceholder = smtpUser.includes('email-anda') || smtpPass.includes('sandi-aplikasi');
+  const isProduction = process.env.NODE_ENV === 'production';
+  const hasNoSMTP = !smtpUser || !smtpPass || isPlaceholder;
+
+  // Tampilkan OTP di konsol jika di lingkungan development, ATAU jika SMTP belum dikonfigurasi secara asli (sehingga butuh disalin dari terminal)
+  if (!isProduction || hasNoSMTP) {
     console.log('\n==================================================');
     console.log('                 VERIFIKASI EMAIL                 ');
     console.log(` Ke Email : ${email}`);
@@ -17,13 +22,13 @@ const sendOTPEmail = async (email, otp) => {
     console.log('==================================================\n');
   }
 
-  // Jika tidak ada kredensial SMTP yang terkonfigurasi di .env, kita cukup cetak di log saja (hanya jika bukan production)
-  if (!smtpUser || !smtpPass) {
-    if (process.env.NODE_ENV === 'production') {
-      console.error('[MAILER] Kredensial SMTP tidak terkonfigurasi! Gagal mengirim email verifikasi di production.');
+  // Jika tidak ada kredensial SMTP yang terkonfigurasi di .env atau masih berupa placeholder bawaan
+  if (hasNoSMTP) {
+    if (isProduction) {
+      console.error('[MAILER] Kredensial SMTP tidak terkonfigurasi atau masih berupa placeholder! Gagal mengirim email verifikasi di production.');
       return { success: false, error: 'SMTP tidak terkonfigurasi.' };
     }
-    console.log('[MAILER] Kredensial SMTP tidak lengkap di file .env. Kode OTP dicetak ke terminal karena bukan production.');
+    console.log('[MAILER] Kredensial SMTP tidak lengkap atau berupa placeholder di file .env. Kode OTP dicetak ke terminal karena bukan produk.');
     return { success: true, message: 'OTP dicetak ke terminal.' };
   }
 
@@ -36,6 +41,9 @@ const sendOTPEmail = async (email, otp) => {
         user: smtpUser,
         pass: smtpPass,
       },
+      connectionTimeout: 5000, // Timeout koneksi 5 detik
+      greetingTimeout: 5000,   // Timeout sambutan SMTP 5 detik
+      socketTimeout: 5000,     // Timeout soket 5 detik
     });
 
     const mailOptions = {
@@ -70,6 +78,12 @@ const sendOTPEmail = async (email, otp) => {
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error(`[MAILER] Gagal mengirim email verifikasi ke ${email}:`, error.message);
+    // Cetak OTP ke konsol server sebagai fallback jika pengiriman email gagal
+    console.log('\n==================================================');
+    console.log('      FALLBACK: VERIFIKASI EMAIL (GAGAL SMTP)     ');
+    console.log(` Ke Email : ${email}`);
+    console.log(` Kode OTP : ${otp}`);
+    console.log('==================================================\n');
     return { success: false, error: error.message };
   }
 };
