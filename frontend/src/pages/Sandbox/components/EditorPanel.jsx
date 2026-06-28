@@ -4,7 +4,7 @@ import Editor from '@monaco-editor/react';
 import { TEMPLATES } from '../../../constants/templates';
 import { Badge } from '../../../components/ui/Badge';
 
-export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, clearConsole, variables, onBackToHome, onToggleSidebar, isAuthenticated, onGoToAuth }) => {
+export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, clearConsole, variables, onBackToHome, onToggleSidebar, isAuthenticated, onGoToAuth, style }) => {
   const [bottomTab, setBottomTab] = useState('console'); // 'console' | 'inspector'
 
   const exportCode = () => {
@@ -18,7 +18,10 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
   };
 
   return (
-    <div className={`flex-1 flex flex-col ${activeTab === 'editor' ? 'flex' : 'hidden md:flex'} landscape:flex md:w-2/3 landscape:w-2/3 min-h-0`}>
+    <div 
+      style={style}
+      className={`flex-1 flex flex-col ${activeTab === 'editor' ? 'flex' : 'hidden md:flex'} landscape:flex min-h-0`}
+    >
       
       {/* Header Panel Editor */}
       <div className="p-3 sm:p-4 bg-slate-950 border-b border-gray-800 flex justify-between items-center select-none gap-2 sm:gap-4">

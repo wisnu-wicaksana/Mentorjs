@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Bot, User, Send, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import { speak, stopSpeech } from '../../../utils/tts';
 
-export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessage, isLoading, onSendMessage, onResetChat, isAuthenticated }) => {
+export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessage, isLoading, onSendMessage, onResetChat, isAuthenticated, style }) => {
   
   // Custom markdown & code blocks parser to render AI responses cleanly
   const renderMessageText = (text) => {
@@ -97,7 +97,10 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
   };
 
   return (
-    <div className={`flex-1 flex flex-col bg-slate-950 border-t md:border-t-0 md:border-l border-gray-800 ${activeTab === 'chat' ? 'flex' : 'hidden md:flex'} landscape:flex md:w-1/3 landscape:w-1/3 min-h-0`}>
+    <div 
+      style={style}
+      className={`flex-1 flex flex-col bg-slate-950 border-t md:border-t-0 md:border-l border-gray-800 ${activeTab === 'chat' ? 'flex' : 'hidden md:flex'} landscape:flex min-h-0`}
+    >
       
       {/* Header Panel Chat */}
       <div className="p-2.5 sm:p-4 bg-slate-950 border-b border-gray-800 flex items-center justify-between select-none shrink-0">

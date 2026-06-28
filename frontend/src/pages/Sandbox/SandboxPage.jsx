@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useCodeRunner } from '../../hooks/useCodeRunner';
 import { useChat } from '../../hooks/useChat';
 import { EditorPanel } from './components/EditorPanel';
@@ -15,6 +15,60 @@ export const SandboxPage = ({ onBackToHome, onGoToAuth }) => {
   const { isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState('editor');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // States & Refs for Split Screen Drag Resizer
+  const [editorWidth, setEditorWidth] = useState(65); // Default 65% width
+  const [isDragging, setIsDragging] = useState(false);
+  const containerRef = useRef(null);
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const startResizing = useCallback((mouseDownEvent) => {
+    mouseDownEvent.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const stopResizing = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  const resize = useCallback((mouseMoveEvent) => {
+    if (!isDragging || !containerRef.current) return;
+    
+    const containerWidth = containerRef.current.clientWidth;
+    if (!containerWidth) return;
+
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const newLeftWidth = mouseMoveEvent.clientX - containerRect.left;
+    const newPercentage = (newLeftWidth / containerWidth) * 100;
+
+    // Constrain width between 30% and 80%
+    if (newPercentage >= 30 && newPercentage <= 80) {
+      setEditorWidth(newPercentage);
+    }
+  }, [isDragging]);
+
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', resize);
+      window.addEventListener('mouseup', stopResizing);
+    } else {
+      window.removeEventListener('mousemove', resize);
+      window.removeEventListener('mouseup', stopResizing);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', resize);
+      window.removeEventListener('mouseup', stopResizing);
+    };
+  }, [isDragging, resize, stopResizing]);
   
   const { code, setCode, consoleOutput, variables, runCode, clearConsole } = useCodeRunner();
   const { 
@@ -136,10 +190,15 @@ export const SandboxPage = ({ onBackToHome, onGoToAuth }) => {
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
         
         {/* Editor & Panel Chat Sampingan */}
-        <div className="flex-1 flex flex-col md:flex-row landscape:flex-row min-h-0">
+        <div 
+          ref={containerRef} 
+          className="flex-1 flex flex-col md:flex-row landscape:flex-row min-h-0 relative"
+          style={isDragging ? { userSelect: 'none', cursor: 'col-resize' } : {}}
+        >
           
           {/* Editor Panel */}
           <EditorPanel 
+            style={isDesktop ? { width: `${editorWidth}%`, flex: 'none' } : {}}
             activeTab={activeTab}
             code={code}
             setCode={setCode}
@@ -153,8 +212,22 @@ export const SandboxPage = ({ onBackToHome, onGoToAuth }) => {
             onGoToAuth={onGoToAuth}
           />
 
+          {/* Vertical Divider Resizer (Desktop only) */}
+          <div 
+            onMouseDown={startResizing}
+            className={`hidden md:block w-1 hover:w-1.5 bg-gray-800/80 hover:bg-violet-500 cursor-col-resize select-none transition-all relative z-20 shrink-0 ${isDragging ? 'bg-violet-500 w-1.5' : ''}`}
+          >
+            {/* Tiny vertical visual dots indicator inside divider */}
+            <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 flex flex-col justify-center gap-1.5 opacity-30 hover:opacity-100">
+              <div className="w-1 h-1 rounded-full bg-gray-500"></div>
+              <div className="w-1 h-1 rounded-full bg-gray-500"></div>
+              <div className="w-1 h-1 rounded-full bg-gray-500"></div>
+            </div>
+          </div>
+
           {/* Chat Panel */}
           <ChatPanel 
+            style={isDesktop ? { width: `${100 - editorWidth}%`, flex: 'none' } : {}}
             activeTab={activeTab}
             chatHistory={chatHistory}
             inputMessage={inputMessage}
