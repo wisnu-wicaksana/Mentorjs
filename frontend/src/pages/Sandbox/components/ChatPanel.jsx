@@ -46,7 +46,7 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
           {inlineParts.map((inlinePart, inlineIndex) => {
             if (inlinePart.startsWith('`') && inlinePart.endsWith('`')) {
               return (
-                <code key={inlineIndex} className="px-1.5 py-0.5 mx-0.5 rounded bg-slate-800 text-pink-400 border border-slate-700 font-mono text-[13px]">
+                <code key={inlineIndex} className="px-1.5 py-0.5 mx-0.5 rounded bg-slate-800 text-pink-400 border border-slate-700 font-mono text-[0.85em]">
                   {inlinePart.slice(1, -1)}
                 </code>
               );

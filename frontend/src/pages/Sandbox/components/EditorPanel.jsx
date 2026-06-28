@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Play, Trash2, Download, Menu, User, LogIn } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import { TEMPLATES } from '../../../constants/templates';
@@ -6,6 +6,15 @@ import { Badge } from '../../../components/ui/Badge';
 
 export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, clearConsole, variables, onBackToHome, onToggleSidebar, isAuthenticated, onGoToAuth, style, onOpenProfile }) => {
   const [bottomTab, setBottomTab] = useState('console'); // 'console' | 'inspector'
+  const [editorFontSize, setEditorFontSize] = useState(window.innerWidth < 768 ? 12 : 14);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setEditorFontSize(window.innerWidth < 768 ? 12 : 14);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const exportCode = () => {
     const element = document.createElement("a");
@@ -104,7 +113,7 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
           onChange={(value) => setCode(value || '')}
           theme="vs-dark"
           options={{
-            fontSize: 16,
+            fontSize: editorFontSize,
             minimap: { enabled: false },
             wordWrap: 'on',
             automaticLayout: true,
