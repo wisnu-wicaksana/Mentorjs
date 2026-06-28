@@ -17,27 +17,26 @@ export const chatTokens = [
 export const totalUserLength = userTokens.reduce((sum, token) => sum + token.text.length, 0);
 export const totalChatLength = chatTokens.reduce((sum, token) => sum + token.text.length, 0);
 
-// FAQ Section Static Questions Data
+// FAQ Section Static Questions Data (English Translation)
 export const faqData = [
   {
-    question: "Apa itu MentorJS?",
-    answer: "MentorJS adalah platform belajar JavaScript interaktif berbasis kecerdasan buatan (AI) yang menggunakan metode sokratik. Dibanding langsung memberikan jawaban berupa baris kode, AI Mentor kami akan membimbing Anda langkah-demi-langkah lewat pertanyaan logis, analogi, dan petunjuk terarah agar logika berpikir Anda terlatih."
+    question: "What is MentorJS?",
+    answer: "MentorJS is an interactive JavaScript learning platform powered by a Socratic AI Mentor. Instead of giving direct code solutions, our AI mentor guides you step-by-step with logical hints, analogies, and targeted questions to train your programming logic."
   },
   {
-    question: "Apa itu metode Sokratik?",
-    answer: "Metode Sokratik adalah pendekatan pembelajaran aktif yang berfokus pada tanya-jawab interaktif. AI Mentor tidak akan langsung menyuapi Anda dengan baris kode solusi, melainkan mengajukan pertanyaan-pertanyaan kritis untuk merangsang logika berpikir Anda sehingga Anda dapat menemukan jalan keluar secara mandiri."
+    question: "What is the Socratic method?",
+    answer: "The Socratic method is an active learning approach focused on interactive questioning. The AI Mentor does not spoon-feed you code, but instead asks critical questions to stimulate your thinking so you can find the solution independently."
   },
   {
-    question: "Mengapa MentorJS menggunakan metode Sokratik?",
-    answer: "Metode Sokratik membantu melatih kemampuan pemecahan masalah (problem-solving) dan pemikiran kritis Anda secara mendalam. Dengan dibimbing untuk mencari jawaban sendiri, pemahaman logika pemrograman Anda akan melekat jauh lebih kuat dibanding sekadar menyalin kode solusi."
+    question: "Why does MentorJS use the Socratic method?",
+    answer: "The Socratic method helps build deep problem-solving skills and critical thinking in programming. By guiding you to discover answers yourself, your understanding of programming logic will be much stronger than simply copying a solution."
   },
   {
-    question: "Apakah platform ini gratis digunakan?",
-    answer: "Ya! Anda dapat menggunakan sandbox workspace, menguji coba kode JavaScript secara lokal, memeriksa konsol log, serta berkonsultasi dengan Socratic AI Mentor secara gratis."
+    question: "Is this platform free to use?",
+    answer: "Yes! You can use the sandbox workspace, write and run JavaScript locally, inspect variable states, check console outputs, and get guidance from our Socratic AI Mentor completely for free."
   },
   {
-    question: "Fitur apa saja yang ditawarkan oleh Sandbox Workspace?",
-    answer: "Sandbox kami dilengkapi dengan editor kode Monaco (mirip VS Code) dengan fitur auto-format, Inspector Variabel untuk melacak nilai variabel secara real-time langkah demi langkah, Konsol Output interaktif, serta AI Mentor yang dilengkapi konversi teks ke suara (Text-to-Speech)."
+    question: "What features are offered by the Sandbox Workspace?",
+    answer: "Our sandbox features a Monaco code editor (like VS Code) with auto-formatting, a real-time Variable Inspector to track variable values step-by-step, an interactive Console Output, and an AI Mentor with built-in Text-to-Speech support."
   }
-
 ];

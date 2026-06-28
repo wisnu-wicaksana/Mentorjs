@@ -47,7 +47,7 @@ export const Homepage = ({ onLaunchApp, onGoToAuth }) => {
       <Header onLaunchApp={onLaunchApp} onGoToAuth={onGoToAuth} />
 
       {/* Hero Section */}
-      <section className="relative pt-20 pb-16 sm:pb-24 lg:pt-28">
+      <section className="relative pt-36 pb-16 sm:pb-24 lg:pt-44">
         {/* Background glow effects */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-violet-600/10 rounded-full blur-[100px] pointer-events-none"></div>
         <div className="absolute top-1/3 left-1/4 w-72 h-72 bg-fuchsia-600/10 rounded-full blur-[100px] pointer-events-none"></div>
@@ -283,10 +283,10 @@ export const Homepage = ({ onLaunchApp, onGoToAuth }) => {
               <span>FAQ</span>
             </div>
             <h2 className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-              Pertanyaan yang Sering Diajukan
+              Frequently Asked Questions
             </h2>
             <p className="mt-4 text-sm sm:text-base text-gray-400 leading-relaxed">
-              Punya pertanyaan seputar cara kerja platform MentorJS? Berikut adalah beberapa jawaban singkat untuk membantu Anda.
+              Have questions about how MentorJS works? Here are some quick answers to help you get started.
             </p>
           </div>
 

@@ -27,7 +27,7 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
             <button 
               onClick={onToggleSidebar}
               className="p-1 rounded bg-slate-900 border border-gray-800 text-gray-400 hover:text-gray-200 cursor-pointer flex items-center justify-center mr-1"
-              title="Toggle Sesi Sidebar"
+              title="Toggle Sidebar"
             >
               <Menu size={14} />
             </button>
@@ -59,7 +59,7 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
               onClick={onGoToAuth}
               className="bg-violet-950/40 hover:bg-violet-900/50 border border-violet-900/50 text-violet-300 hover:text-violet-200 px-2.5 py-2 sm:px-3 sm:py-2 rounded-md text-[10px] sm:text-xs font-bold transition-all cursor-pointer mr-1"
             >
-              Masuk
+              Sign In
             </button>
           )}
           

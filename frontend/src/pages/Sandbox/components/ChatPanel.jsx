@@ -29,7 +29,7 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
             {language && (
               <div className="px-3 py-1 bg-slate-900 border-b border-slate-800 text-slate-400 flex justify-between items-center select-none font-sans text-[10px] font-bold uppercase tracking-wider">
                 <span>{language}</span>
-                <span className="text-[9px] text-slate-500 font-normal">KODE</span>
+                <span className="text-[9px] text-slate-500 font-normal">CODE</span>
               </div>
             )}
             <pre className="p-3 overflow-x-auto text-emerald-400 select-all leading-normal whitespace-pre">
@@ -181,7 +181,7 @@ export const ChatPanel = ({ activeTab, chatHistory, inputMessage, setInputMessag
       <form onSubmit={handleSubmit} className="p-2 sm:p-4 bg-slate-950 border-t border-gray-800 shrink-0">
         {!isAuthenticated && (
           <div className="mb-2 px-3 py-1.5 bg-slate-900/60 border border-amber-900/30 rounded-md text-[10px] text-amber-400/80 flex items-center justify-between select-none">
-            <span>Sesi tamu aktif. Riwayat percakapan tidak akan disimpan.</span>
+            <span>Guest session active. Conversation history will not be saved.</span>
           </div>
         )}
         <div className="flex items-center gap-1.5 sm:gap-2 bg-slate-900 border border-gray-800 rounded-lg p-1.5 sm:p-2 focus-within:border-violet-500/50 transition-colors">

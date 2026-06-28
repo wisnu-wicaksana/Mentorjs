@@ -55,7 +55,7 @@ function App() {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white gap-3 select-none">
         <div className="w-8 h-8 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin" />
-        <span className="text-xs text-gray-500 font-sans tracking-wide">Menghubungkan Sesi Aman...</span>
+        <span className="text-xs text-gray-500 font-sans tracking-wide">Connecting Secure Session...</span>
       </div>
     );
   }

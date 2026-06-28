@@ -49,12 +49,12 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
     } else {
       // Panggil aksi registrasi
       if (username.trim().length < 3) {
-        setErrorMsg('Username minimal harus 3 karakter.');
+        setErrorMsg('Username must be at least 3 characters.');
         setLoading(false);
         return;
       }
       if (password !== confirmPassword) {
-        setErrorMsg('Konfirmasi kata sandi tidak cocok. Harap periksa kembali penulisan kata sandi Anda.');
+        setErrorMsg('Confirm password does not match. Please verify your password entries.');
         setLoading(false);
         return;
       }
@@ -64,7 +64,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
       } else if (result.unverified) {
         setOtpEmail(result.email || email);
         setIsOtpStep(true);
-        setSuccessMsg(result.message || 'Akun terdaftar! Masukkan OTP yang dikirim ke email Anda.');
+        setSuccessMsg(result.message || 'Account registered! Please enter the OTP sent to your email.');
         setLoading(false);
       } else {
         setErrorMsg(result.message);
@@ -81,7 +81,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
     setLoading(true);
 
     if (otpCode.trim().length !== 6) {
-      setErrorMsg('Kode OTP harus terdiri dari 6 digit angka.');
+      setErrorMsg('OTP code must be exactly 6 digits.');
       setLoading(false);
       return;
     }
@@ -103,7 +103,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
 
     const result = await resendOTP(otpEmail);
     if (result.success) {
-      setSuccessMsg(result.message || 'Kode OTP baru telah dikirim.');
+      setSuccessMsg(result.message || 'A new OTP code has been sent successfully.');
     } else {
       setErrorMsg(result.message);
     }
@@ -124,12 +124,12 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
             <span>MentorJS AI Platform</span>
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-gray-100 to-gray-400 bg-clip-text text-transparent">
-            {isOtpStep ? 'Verifikasi Akun' : 'Mentor JS'}
+            {isOtpStep ? 'Verify Account' : 'Mentor JS'}
           </h1>
           <p className="text-xs text-gray-500 mt-1 leading-relaxed">
             {isOtpStep 
-              ? `Masukkan 6-digit kode verifikasi yang telah dikirim ke ${otpEmail}` 
-              : 'Belajar JavaScript secara interaktif dengan Socratic AI Mentor'}
+              ? `Enter the 6-digit verification code sent to ${otpEmail}` 
+              : 'Learn JavaScript interactively with Socratic AI Mentor'}
           </p>
         </div>
 
@@ -138,7 +138,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
           <div className="mb-5 p-3 bg-emerald-950/30 border border-emerald-900/40 rounded-xl text-xs text-emerald-400 flex items-start gap-2.5 select-text">
             <span className="shrink-0 text-emerald-500 text-sm mt-0.5 font-bold">✓</span>
             <div className="flex-1 text-left leading-relaxed">
-              <span className="font-bold block mb-0.5">Sukses:</span>
+              <span className="font-bold block mb-0.5">Success:</span>
               {successMsg}
             </div>
           </div>
@@ -149,7 +149,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
           <div className="mb-5 p-3 bg-red-950/30 border border-red-900/40 rounded-xl text-xs text-red-400 flex items-start gap-2.5 select-text">
             <span className="shrink-0 text-red-500 text-sm mt-0.5">⚠️</span>
             <div className="flex-1 text-left leading-relaxed">
-              <span className="font-bold block mb-0.5">Gagal:</span>
+              <span className="font-bold block mb-0.5">Failed:</span>
               {errorMsg}
             </div>
           </div>
@@ -160,7 +160,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
           <form onSubmit={handleVerifyOtp} className="space-y-4">
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-bold tracking-wider text-gray-400 block text-center">
-                Masukkan Kode OTP
+                Enter OTP Code
               </label>
               <div className="relative">
                 <input
@@ -184,10 +184,10 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Verifikasi...</span>
+                  <span>Verifying...</span>
                 </span>
               ) : (
-                'Verifikasi Akun'
+                'Verify Account'
               )}
             </Button>
 
@@ -198,7 +198,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
                 className="text-violet-400 hover:text-violet-300 font-semibold transition-colors cursor-pointer select-none"
                 disabled={loading}
               >
-                Kirim Ulang OTP
+                Resend OTP
               </button>
               <button
                 type="button"
@@ -211,7 +211,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
                 className="text-gray-500 hover:text-gray-300 transition-colors cursor-pointer select-none"
                 disabled={loading}
               >
-                Batal
+                Cancel
               </button>
             </div>
           </form>
@@ -230,7 +230,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
                 }`}
               >
                 <LogIn size={13} />
-                <span>Masuk</span>
+                <span>Sign In</span>
               </button>
               <button
                 type="button"
@@ -242,7 +242,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
                 }`}
               >
                 <UserPlus size={13} />
-                <span>Daftar</span>
+                <span>Sign Up</span>
               </button>
             </div>
 
@@ -260,7 +260,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
                       required
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      placeholder="Masukkan nama pengguna..."
+                      placeholder="Enter your username..."
                       className="w-full bg-slate-950/80 border border-gray-800 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 pl-10 pr-4 py-2.5 rounded-lg text-xs text-white placeholder-gray-600 transition-all outline-none font-sans"
                     />
                   </div>
@@ -269,7 +269,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
 
               {/* Input Email */}
               <div className="space-y-1.5">
-                <label className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Alamat Email</label>
+                <label className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Email Address</label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
                     <Mail size={15} />
@@ -279,7 +279,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="budi@example.com"
+                    placeholder="john@example.com"
                     className="w-full bg-slate-950/80 border border-gray-800 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 pl-10 pr-4 py-2.5 rounded-lg text-xs text-white placeholder-gray-600 transition-all outline-none font-sans"
                   />
                 </div>
@@ -287,7 +287,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
 
               {/* Input Password */}
               <div className="space-y-1.5">
-                <label className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Kata Sandi</label>
+                <label className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Password</label>
                 <div className="relative flex items-center">
                   <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
                     <Lock size={15} />
@@ -304,7 +304,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
                     type="button"
                     onClick={() => setShowPassword(prev => !prev)}
                     className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-violet-400 transition-colors cursor-pointer"
-                    title={showPassword ? "Sembunyikan Kata Sandi" : "Tampilkan Kata Sandi"}
+                    title={showPassword ? "Hide Password" : "Show Password"}
                   >
                     {showPassword ? <Eye size={15} /> : <EyeOff size={15} />}
                   </button>
@@ -314,7 +314,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
               {/* Input Konfirmasi Password (Hanya untuk Register) */}
               {!isLoginTab && (
                 <div className="space-y-1.5">
-                  <label className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Konfirmasi Kata Sandi</label>
+                  <label className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Confirm Password</label>
                   <div className="relative flex items-center">
                     <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
                       <Lock size={15} />
@@ -331,7 +331,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
                     type="button"
                     onClick={() => setShowPassword(prev => !prev)}
                     className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-violet-400 transition-colors cursor-pointer"
-                    title={showPassword ? "Sembunyikan Kata Sandi" : "Tampilkan Kata Sandi"}
+                    title={showPassword ? "Hide Password" : "Show Password"}
                   >
                     {showPassword ? <Eye size={15} /> : <EyeOff size={15} />}
                   </button>
@@ -349,12 +349,12 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
                     <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    <span>Memproses...</span>
+                    <span>Processing...</span>
                   </span>
                 ) : isLoginTab ? (
-                  'Masuk Sekarang'
+                  'Sign In Now'
                 ) : (
-                  'Buat Akun'
+                  'Create Account'
                 )}
               </Button>
             </form>
@@ -368,7 +368,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
               onClick={onBackToHome}
               className="text-xs text-gray-500 hover:text-violet-400 transition-colors cursor-pointer select-none"
             >
-              &larr; Kembali ke Beranda
+              &larr; Back to Homepage
             </button>
           </div>
         )}
