@@ -109,10 +109,10 @@ export const SandboxPage = ({ onBackToHome, onGoToAuth }) => {
   return (
     <div className="flex h-screen bg-gray-900 text-white font-sans overflow-hidden relative">
       
-      {/* 1. Backdrop Overlay (Hanya muncul di Mobile jika sidebar dibuka) */}
+      {/* 1. Backdrop Overlay (Muncul di semua mode jika sidebar dibuka) */}
       {isAuthenticated && isSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/60 z-30 md:hidden transition-opacity duration-300"
+          className="fixed inset-0 bg-black/60 z-30 transition-opacity duration-300"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
@@ -121,7 +121,7 @@ export const SandboxPage = ({ onBackToHome, onGoToAuth }) => {
       {isAuthenticated && (
         <div className={`fixed inset-y-0 left-0 z-40 transform ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } md:relative md:translate-x-0 transition-transform duration-300 ease-in-out`}>
+        } transition-transform duration-300 ease-in-out`}>
           <HistorySidebar 
             sessions={sessions}
             activeSessionId={activeSessionId}
