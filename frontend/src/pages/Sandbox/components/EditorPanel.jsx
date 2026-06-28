@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Play, Trash2, Download, Menu, User } from 'lucide-react';
+import { Play, Trash2, Download, Menu, User, LogIn } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import { TEMPLATES } from '../../../constants/templates';
 import { Badge } from '../../../components/ui/Badge';
@@ -42,7 +42,7 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
           >
             &larr; Home
           </button>
-          <h2 className="text-xs sm:text-sm font-semibold text-gray-400">main.js</h2>
+          <h2 className="text-xs sm:text-sm font-semibold text-gray-400 hidden xs:block">main.js</h2>
           <select 
             onChange={(e) => setCode(TEMPLATES[e.target.value] || '')}
             defaultValue="default"
@@ -55,14 +55,15 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
           </select>
         </div>
         
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           {!isAuthenticated && (
             <button 
               type="button"
               onClick={onGoToAuth}
-              className="bg-violet-950/40 hover:bg-violet-900/50 border border-violet-900/50 text-violet-300 hover:text-violet-200 px-2.5 py-2 sm:px-3 sm:py-2 rounded-md text-[10px] sm:text-xs font-bold transition-all cursor-pointer mr-1"
+              className="bg-violet-950/40 hover:bg-violet-900/50 border border-violet-900/50 text-violet-300 hover:text-violet-200 px-2.5 py-2 sm:px-3 sm:py-2 rounded-md text-[10px] sm:text-xs font-bold transition-all cursor-pointer flex items-center gap-1"
             >
-              Sign In
+              <LogIn size={13} className="xs:hidden" />
+              <span className="hidden xs:inline">Sign In</span>
             </button>
           )}
           
@@ -77,7 +78,7 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
 
           <button 
             onClick={exportCode}
-            className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 border border-gray-800 text-gray-300 hover:text-white px-2.5 py-2 sm:px-3 sm:py-2 rounded-md text-[10px] sm:text-xs font-bold transition-all active:scale-95 cursor-pointer"
+            className="hidden sm:flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 border border-gray-800 text-gray-300 hover:text-white px-2.5 py-2 sm:px-3 sm:py-2 rounded-md text-[10px] sm:text-xs font-bold transition-all active:scale-95 cursor-pointer"
             title="Download Code (.js)"
           >
             <Download size={13} className="sm:w-3.5 sm:h-3.5" />
@@ -86,10 +87,11 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
           
           <button 
             onClick={runCode}
-            className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-md text-[10px] sm:text-xs font-bold transition-all transform active:scale-95 cursor-pointer shadow-lg shadow-emerald-900/20"
+            className="flex items-center gap-1 bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-2 sm:px-4 sm:py-2 rounded-md text-[10px] sm:text-xs font-bold transition-all transform active:scale-95 cursor-pointer shadow-lg shadow-emerald-900/20"
+            title="Run Code"
           >
-            <Play size={13} className="sm:w-3.5 sm:h-3.5" />
-            <span>Run</span>
+            <Play size={13} className="fill-current sm:w-3.5 sm:h-3.5" />
+            <span className="hidden xs:inline">Run</span>
           </button>
         </div>
       </div>

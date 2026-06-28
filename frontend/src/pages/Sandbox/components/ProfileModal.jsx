@@ -67,7 +67,7 @@ export const ProfileModal = ({ isOpen, onClose, user, sessionsCount, onGoToAuth,
       />
 
       {/* Modal Content Card */}
-      <div className="relative w-full max-w-md bg-slate-950/95 border border-gray-800 rounded-2xl overflow-hidden shadow-2xl p-6 z-10 animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-md bg-slate-950/95 border border-gray-800 rounded-2xl overflow-hidden shadow-2xl p-4 sm:p-6 z-10 animate-in fade-in zoom-in-95 duration-200">
         
         {/* Close Button */}
         <button 
