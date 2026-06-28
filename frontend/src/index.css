@@ -1,7 +1,19 @@
 @import "tailwindcss";
 
 html {
-  font-size: 18px;
+  font-size: 14px; /* Base size for mobile screens (S, M, L) */
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 15.5px; /* Base size for iPad/tablets */
+  }
+}
+
+@media (min-width: 1024px) {
+  html {
+    font-size: 16px; /* Standard size for laptops and desktops */
+  }
 }
 
 html,
