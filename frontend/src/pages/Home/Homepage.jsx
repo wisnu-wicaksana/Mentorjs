@@ -58,14 +58,14 @@ export const Homepage = ({ onLaunchApp, onGoToAuth }) => {
             <span>Socratic Learning Platform</span>
           </div>
           
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent leading-none">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent leading-[1.15]">
             Master JavaScript <br />
             <span className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
               The Socratic Way
             </span>
           </h1>
           
-          <p className="mt-6 text-base sm:text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-6 text-sm sm:text-base md:text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
             Unlock your programming potential with a Socratic AI mentor. MentorJS critically guides you step-by-step using logic, analogies, and questions—never spoiling raw code answers.
           </p>
 
@@ -162,8 +162,8 @@ export const Homepage = ({ onLaunchApp, onGoToAuth }) => {
       <section id="features" className="py-20 border-t border-gray-900 bg-slate-950/40 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-              Engineered For Modern Learning
+            <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+              Built for Practical Practice
             </h2>
             <p className="mt-4 text-sm sm:text-base text-gray-400 leading-relaxed">
               Experience a sandboxed local environment that brings professional editor utilities directly to your educational journey.
@@ -219,8 +219,8 @@ export const Homepage = ({ onLaunchApp, onGoToAuth }) => {
       <section id="how-it-works" className="py-20 border-t border-gray-900 bg-slate-950 relative">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-              How It Works
+            <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+              How MentorJS Works
             </h2>
             <p className="mt-4 text-sm sm:text-base text-gray-400 leading-relaxed">
               Follow these three simple steps to start sharpening your JavaScript problem-solving skills.
@@ -282,7 +282,7 @@ export const Homepage = ({ onLaunchApp, onGoToAuth }) => {
               <Sparkles size={12} />
               <span>FAQ</span>
             </div>
-            <h2 className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+            <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
               Frequently Asked Questions
             </h2>
             <p className="mt-4 text-sm sm:text-base text-gray-400 leading-relaxed">

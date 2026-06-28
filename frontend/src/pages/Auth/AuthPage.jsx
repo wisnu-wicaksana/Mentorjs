@@ -123,7 +123,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
             <Sparkles size={12} />
             <span>MentorJS AI Platform</span>
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-gray-100 to-gray-400 bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-gray-100 to-gray-400 bg-clip-text text-transparent">
             {isOtpStep ? 'Verify Account' : 'Mentor JS'}
           </h1>
           <p className="text-xs text-gray-500 mt-1 leading-relaxed">
@@ -170,7 +170,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))} // Hanya terima angka
                   placeholder="123456"
-                  className="w-full bg-slate-950/80 border border-gray-800 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 py-3 rounded-lg text-xl font-bold tracking-[0.75em] text-center text-white placeholder-gray-800 transition-all outline-none font-mono"
+                  className="w-full bg-slate-950/80 border border-gray-800 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 py-3 rounded-lg text-lg xs:text-xl font-bold tracking-[0.5em] xs:tracking-[0.75em] text-center text-white placeholder-gray-800 transition-all outline-none font-mono"
                 />
               </div>
             </div>
