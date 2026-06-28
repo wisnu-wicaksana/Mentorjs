@@ -12,7 +12,7 @@ function App() {
     const hash = window.location.hash.replace('#', '');
     const validPages = ['home', 'auth', 'workspace'];
     if (validPages.includes(hash)) return hash;
-    return localStorage.getItem('currentPage') || 'home';
+    return 'home';
   });
 
   // Fungsi helper untuk navigasi mengganti hash URL
