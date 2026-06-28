@@ -4,7 +4,7 @@ import { useAuth } from './useAuth';
 
 const DEFAULT_WELCOME_MESSAGE = {
   sender: 'mentor',
-  text: "Halo! Saya adalah MentorJS. Tulis kode Anda di sebelah kiri, dan tanyakan apa saja jika Anda bingung atau menemukan error. Saya tidak akan memberikan jawaban langsung, tetapi akan memandu Anda menyelesaikannya sendiri!"
+  text: "Hello! I am MentorJS. Write your code on the left, and ask me anything if you get stuck or encounter an error. I won't give you direct answers, but I will guide you to solve it yourself!"
 };
 
 export const useChat = () => {
