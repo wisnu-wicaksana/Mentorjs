@@ -239,7 +239,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))} // Hanya terima angka
                   placeholder="123456"
-                  className="w-full bg-slate-950/80 border border-gray-800 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 py-3 rounded-lg text-lg xs:text-xl font-bold tracking-[0.5em] xs:tracking-[0.75em] text-center text-white placeholder-gray-800 transition-all outline-none font-mono"
+                  className="w-full bg-slate-950/80 border border-gray-800 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 py-3 rounded-lg text-lg sm:text-xl font-bold tracking-[0.5em] sm:tracking-[0.75em] text-center text-white placeholder-gray-800 transition-all outline-none font-mono"
                 />
               </div>
             </div>
@@ -338,7 +338,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
                     value={forgotOtpCode}
                     onChange={(e) => setForgotOtpCode(e.target.value.replace(/\D/g, ''))}
                     placeholder="123456"
-                    className="w-full bg-slate-950/80 border border-gray-800 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 py-3 rounded-lg text-lg xs:text-xl font-bold tracking-[0.5em] xs:tracking-[0.75em] text-center text-white placeholder-gray-800 transition-all outline-none font-mono"
+                    className="w-full bg-slate-950/80 border border-gray-800 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 py-3 rounded-lg text-lg sm:text-xl font-bold tracking-[0.5em] sm:tracking-[0.75em] text-center text-white placeholder-gray-800 transition-all outline-none font-mono"
                   />
                 </div>
 
