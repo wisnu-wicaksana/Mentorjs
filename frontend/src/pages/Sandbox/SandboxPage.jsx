@@ -9,6 +9,8 @@ import { HistorySidebar } from './components/HistorySidebar';
 import { historyAPI } from '../../services/api';
 import { useAuth } from '../../hooks/useAuth';
 
+const DEFAULT_CODE = `// Write JavaScript code here\nconst mentor = "MentorJS";\nconsole.log("Hello from " + mentor + "!");`;
+
 export const SandboxPage = ({ onBackToHome, onGoToAuth }) => {
   const { isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState('editor');
@@ -41,7 +43,7 @@ export const SandboxPage = ({ onBackToHome, onGoToAuth }) => {
         await selectSession(list[0].id, setCode);
       } else {
         // Buat sesi baru jika database masih kosong
-        await createSession('', setCode);
+        await createSession(DEFAULT_CODE, setCode);
       }
     };
     initWorkspace();
@@ -53,7 +55,6 @@ export const SandboxPage = ({ onBackToHome, onGoToAuth }) => {
   }, []);
 
   // 1.5. Reset workspace state ketika user logout (transisi ke mode tamu)
-  const DEFAULT_CODE = `// Write JavaScript code here\nconst mentor = "MentorJS";\nconsole.log("Hello from " + mentor + "!");`;
   const isFirstMount = useRef(true);
   useEffect(() => {
     if (isFirstMount.current) {
@@ -89,7 +90,7 @@ export const SandboxPage = ({ onBackToHome, onGoToAuth }) => {
         console.error("Gagal auto-save kode:", err.message);
       }
     }
-    await createSession('', setCode);
+    await createSession(DEFAULT_CODE, setCode);
     setIsSidebarOpen(false);
   };
 
