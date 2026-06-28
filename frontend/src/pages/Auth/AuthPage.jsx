@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { Sparkles, Mail, Lock, User, LogIn, UserPlus } from 'lucide-react';
+import { Sparkles, Mail, Lock, User, LogIn, UserPlus, Eye, EyeOff } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 
 export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
@@ -11,6 +11,8 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   
   // States untuk OTP Verification
   const [isOtpStep, setIsOtpStep] = useState(false);
@@ -47,6 +49,11 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
       // Panggil aksi registrasi
       if (username.trim().length < 3) {
         setErrorMsg('Username minimal harus 3 karakter.');
+        setLoading(false);
+        return;
+      }
+      if (password !== confirmPassword) {
+        setErrorMsg('Konfirmasi kata sandi tidak cocok. Harap periksa kembali penulisan kata sandi Anda.');
         setLoading(false);
         return;
       }
@@ -217,7 +224,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
             <div className="flex bg-slate-950 p-1 rounded-lg border border-gray-900 mb-6">
               <button
                 type="button"
-                onClick={() => { setIsLoginTab(true); setErrorMsg(''); setSuccessMsg(''); }}
+                onClick={() => { setIsLoginTab(true); setErrorMsg(''); setSuccessMsg(''); setConfirmPassword(''); }}
                 className={`flex-1 py-2 text-xs font-semibold rounded-md transition-all flex items-center justify-center gap-1.5 ${
                   isLoginTab 
                     ? 'bg-violet-600 text-white shadow-lg shadow-violet-900/30' 
@@ -229,7 +236,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
               </button>
               <button
                 type="button"
-                onClick={() => { setIsLoginTab(false); setErrorMsg(''); setSuccessMsg(''); }}
+                onClick={() => { setIsLoginTab(false); setErrorMsg(''); setSuccessMsg(''); setConfirmPassword(''); }}
                 className={`flex-1 py-2 text-xs font-semibold rounded-md transition-all flex items-center justify-center gap-1.5 ${
                   !isLoginTab 
                     ? 'bg-violet-600 text-white shadow-lg shadow-violet-900/30' 
@@ -283,20 +290,56 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
               {/* Input Password */}
               <div className="space-y-1.5">
                 <label className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Kata Sandi</label>
-                <div className="relative">
+                <div className="relative flex items-center">
                   <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
                     <Lock size={15} />
                   </span>
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full bg-slate-950/80 border border-gray-800 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 pl-10 pr-4 py-2.5 rounded-lg text-xs text-white placeholder-gray-600 transition-all outline-none font-sans"
+                    className="w-full bg-slate-950/80 border border-gray-800 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 pl-10 pr-10 py-2.5 rounded-lg text-xs text-white placeholder-gray-600 transition-all outline-none font-sans"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(prev => !prev)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-violet-400 transition-colors cursor-pointer"
+                    title={showPassword ? "Sembunyikan Kata Sandi" : "Tampilkan Kata Sandi"}
+                  >
+                    {showPassword ? <Eye size={15} /> : <EyeOff size={15} />}
+                  </button>
                 </div>
               </div>
+
+              {/* Input Konfirmasi Password (Hanya untuk Register) */}
+              {!isLoginTab && (
+                <div className="space-y-1.5">
+                  <label className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Konfirmasi Kata Sandi</label>
+                  <div className="relative flex items-center">
+                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                      <Lock size={15} />
+                    </span>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full bg-slate-950/80 border border-gray-800 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 pl-10 pr-10 py-2.5 rounded-lg text-xs text-white placeholder-gray-600 transition-all outline-none font-sans"
+                    />
+                     <button
+                    type="button"
+                    onClick={() => setShowPassword(prev => !prev)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-violet-400 transition-colors cursor-pointer"
+                    title={showPassword ? "Sembunyikan Kata Sandi" : "Tampilkan Kata Sandi"}
+                  >
+                    {showPassword ? <Eye size={15} /> : <EyeOff size={15} />}
+                  </button>
+                  </div>
+                </div>
+              )}
 
               {/* Tombol Aksi Submit */}
               <Button

@@ -1,14 +1,14 @@
 const nodemailer = require('nodemailer');
 
 const sendOTPEmail = async (email, otp) => {
-  // 1. Dapatkan konfigurasi SMTP dari .env (jika ada)
+  // 1. Dapatkan konfigurasi SMTP dari .env 
   const smtpHost = process.env.SMTP_HOST || '';
   const smtpPort = process.env.SMTP_PORT || 587;
   const smtpUser = process.env.SMTP_USER || '';
   const smtpPass = process.env.SMTP_PASS || '';
   const smtpFrom = process.env.SMTP_FROM || '"MentorJS Admin" <no-reply@mentorjs.com>';
 
-  // Hanya tampilkan OTP di konsol server jika di lingkungan development/testing (bukan production)
+  // Hanya tampilkan OTP di konsol server jika di lingkungan development/testing 
   if (process.env.NODE_ENV !== 'production') {
     console.log('\n==================================================');
     console.log('                 VERIFIKASI EMAIL                 ');
