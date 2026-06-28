@@ -42,11 +42,11 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
           >
             &larr; Home
           </button>
-          <h2 className="text-xs sm:text-sm font-semibold text-gray-400 hidden sm:block">main.js</h2>
+          <h2 className="text-xs sm:text-sm font-semibold text-gray-400 hidden lg:block">main.js</h2>
           <select 
             onChange={(e) => setCode(TEMPLATES[e.target.value] || '')}
             defaultValue="default"
-            className="bg-slate-900 border border-gray-800 text-[10px] sm:text-xs text-gray-300 rounded pl-2 pr-6 sm:pl-3 sm:pr-8 py-1 sm:py-1.5 w-24 sm:w-auto outline-none focus:border-violet-500/50 cursor-pointer transition-colors"
+            className="bg-slate-900 border border-gray-800 text-[10px] sm:text-xs text-gray-300 rounded pl-2 pr-6 sm:pl-3 sm:pr-8 py-1 sm:py-1.5 w-24 lg:w-auto outline-none focus:border-violet-500/50 cursor-pointer transition-colors"
           >
             <option value="default">Hello World (Default)</option>
             <option value="loops">Loops</option>
@@ -62,8 +62,8 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
               onClick={onGoToAuth}
               className="bg-violet-950/40 hover:bg-violet-900/50 border border-violet-900/50 text-violet-300 hover:text-violet-200 px-2.5 py-2 sm:px-3 sm:py-2 rounded-md text-[10px] sm:text-xs font-bold transition-all cursor-pointer flex items-center gap-1"
             >
-              <LogIn size={13} className="sm:hidden" />
-              <span className="hidden sm:inline">Sign In</span>
+              <LogIn size={13} className="lg:hidden" />
+              <span className="hidden lg:inline">Sign In</span>
             </button>
           )}
           
@@ -73,7 +73,7 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
             title="Profile & Stats"
           >
             <User size={13} className="sm:w-3.5 sm:h-3.5" />
-            <span className="hidden sm:inline">Profile</span>
+            <span className="hidden lg:inline">Profile</span>
           </button>
 
           <button 
@@ -82,7 +82,7 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
             title="Download Code (.js)"
           >
             <Download size={13} className="sm:w-3.5 sm:h-3.5" />
-            <span className="hidden sm:inline">Download</span>
+            <span className="hidden lg:inline">Download</span>
           </button>
           
           <button 
@@ -91,7 +91,7 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
             title="Run Code"
           >
             <Play size={13} className="fill-current sm:w-3.5 sm:h-3.5" />
-            <span className="hidden sm:inline">Run</span>
+            <span className="hidden lg:inline">Run</span>
           </button>
         </div>
       </div>
