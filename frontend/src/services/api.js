@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Gunakan alamat localhost port 3000 untuk backend API
-const API_BASE_URL = `http://${window.location.hostname}:3000/api`;
+// Gunakan URL API dari variabel lingkungan VITE jika tersedia (untuk produksi), atau localhost (untuk development)
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || `http://${window.location.hostname}:3000/api`;
 
 // Inisialisasi Axios client dengan kredensial aktif untuk bertukar Cookie
 const apiClient = axios.create({
