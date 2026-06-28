@@ -9,10 +9,14 @@ MentorJS is an interactive educational SaaS platform designed to help beginners 
 * **📝 Interactive Code Editor:** Write and execute JavaScript code directly in the browser using a VS Code-like interface powered by `@monaco-editor/react`.
 * **⚙️ Local JS Execution & Terminal:** A custom sandboxed browser-based runner that overrides `console.log` and `console.error` to capture logs and runtime errors in a terminal-like console output pane.
 * **🤖 Socratic AI Companion:** Intelligent guidance from Google Gemini 2.5 Flash that reads your code, console errors, and conversation history to guide you step-by-step without spoon-feeding the final solution.
+* **📐 Draggable Split-Pane Workspace:** Responsive workspace featuring a draggable divider bar that lets users adjust the width of the code editor and the AI mentor panel dynamically on desktop viewports.
+* **🔐 Secure Authentication & OTP Verification:** Secure sign up and sign in forms with password match validation, visibility toggle buttons, and secure 6-digit verification code OTPs sent to the user's email via SMTP.
+* **🛡️ Password Recovery:** Self-service account recovery via a "Forgot Password" workflow using secure email verification OTP codes.
+* **🗂️ Learning History Session Manager:** Clean sidebar navigation to manage sessions (create, delete, switch, and automatically rename based on the user's first query). Syncs to PostgreSQL for registered users, fallback to memory-state for guests.
 * **📱 Mobile-First Responsive UI:** Sleek dashboard with a split-screen panel layout for desktop that transitions into an optimized tabbed view for mobile viewports, featuring a professional IDE-style status bar footer.
 * **🏗️ Clean MVC & Hook-Component Architecture:** 
   * **Backend:** Express API structured with separate Routes, Controllers, Services, and Configuration modules.
-  * **Frontend:** React workspace modularized with Custom Hooks (`useChat`, `useCodeRunner`) and presenting stateless UI components.
+  * **Frontend:** React workspace modularized with Custom Hooks (`useChat`, `useCodeRunner`, `useMockupAnimation`) and presenting stateless UI components.
 
 ---
 
@@ -37,11 +41,15 @@ graph TD
 ```text
 aura/
 ├── backend/
+│   ├── prisma/
+│   │   └── schema.prisma # Prisma Schema configuration (PostgreSQL)
 │   ├── src/
-│   │   ├── config/       # Gemini client configuration
-│   │   ├── controllers/  # Request validation & logic handlers
-│   │   ├── routes/       # Endpoint routing definition
-│   │   └── services/     # Socratic prompt template & Gemini service
+│   │   ├── config/       # Gemini and DB client configuration
+│   │   ├── controllers/  # Request validation & logic handlers (auth, history, mentor)
+│   │   ├── middlewares/  # JWT Token auth validation middleware
+│   │   ├── routes/       # Endpoint routing definitions
+│   │   ├── services/     # Socratic prompt template & Gemini service
+│   │   └── utils/        # Nodemailer SMTP setup and templates
 │   ├── server.js         # Backend Entry point (Express)
 │   ├── .env              # API keys and secrets (DO NOT COMMIT!)
 │   └── package.json
@@ -50,16 +58,13 @@ aura/
     │   ├── components/
     │   │   ├── layout/   # Global layout elements (Header, Footer)
     │   │   └── ui/       # Atomic/stateless UI elements (Button, Badge, CodeMockup, MockupWindow, BackgroundEffect)
-    │   ├── constants/    # Monaco editor starting templates & mockup data
-    │   ├── hooks/        # Business logic custom hooks (useChat, useCodeRunner)
-    │   ├── pages/        # Top-level view containers
-    │   │   ├── Home/     # Interactive Homepage layout
-    │   │   └── Sandbox/  # Playground, Editor panel, Chat panel, & StatusBar
-    │   ├── services/     # Axios setup & HTTP communication with the backend
-    │   │   └── api.js
+    │   ├── constants/    # Monaco editor templates & static mockupData
+    │   ├── hooks/        # Business logic custom hooks (useChat, useCodeRunner, useMockupAnimation)
+    │   ├── pages/        # Top-level view containers (Home, Auth, Sandbox)
+    │   ├── services/     # Axios setup & HTTP communication with the backend (api.js)
     │   ├── utils/        # Extracted parse helpers & Text-to-Speech (TTS) engine
     │   ├── App.css
-    │   ├── App.jsx       # View toggle router (Home / Workspace)
+    │   ├── App.jsx       # View toggle router with Location Hash routing
     │   ├── index.css     # Base Tailwind styling v4
     │   └── main.jsx      # React entry mount point
     ├── vite.config.js
@@ -73,6 +78,7 @@ aura/
 ### Prerequisites
 * [Node.js](https://nodejs.org/) installed.
 * A Gemini API Key from [Google AI Studio](https://aistudio.google.com/).
+* A running PostgreSQL database.
 
 ### 1. Backend Setup
 1. Navigate to the `backend` folder and install dependencies:
@@ -80,17 +86,30 @@ aura/
    cd backend
    npm install
    ```
-2. Create a `.env` file in the `backend` directory:
+2. Create a `.env` file in the `backend` directory with the following variables:
    ```env
    PORT=3000
-   GEMINI_API_KEY=your_gemini_api_key_here
+   DATABASE_URL="postgresql://username:password@localhost:5432/mentorjs?schema=public"
+   JWT_SECRET="your_jwt_secret_key"
+   GEMINI_API_KEY="your_gemini_api_key_here"
+
+   # SMTP Configuration (Optional: defaults to terminal log fallbacks if left out)
+   SMTP_HOST="smtp.gmail.com"
+   SMTP_PORT=587
+   SMTP_USER="your-email@gmail.com"
+   SMTP_PASS="your-16-character-app-password"
+   SMTP_FROM='"MentorJS Admin" <your-email@gmail.com>'
    ```
    > [!IMPORTANT]
    > Keep your `.env` file secure. Never commit it to GitHub. It is ignored by `.gitignore`.
-3. Start the backend server:
+3. Push the database schema using Prisma:
+   ```bash
+   npx prisma db push
+   ```
+4. Start the backend server:
    ```bash
    npm start
-   # or with nodemon for development:
+   # or with nodemon for auto-restart in development:
    npm run dev
    ```
    The backend API will run at `http://localhost:3000`.
@@ -114,17 +133,18 @@ aura/
 To ensure strict code quality and compatibility, the project contains strict ESLint validation.
 
 * Run linter:
-  ```bash
-  cd frontend
-  npm run lint
-  ```
+   ```bash
+   cd frontend
+   npm run lint
+   ```
 * Test production build:
-  ```bash
-  npm run build
-  ```
+   ```bash
+   npm run build
+   ```
 
 ---
 
 ## 🛡️ Security Best Practices
 * **Environment Separation:** API Keys are kept securely on the Node.js backend. The frontend communicates with the backend local API, preventing API key exposure in the browser.
 * **Credentials Lock:** The backend `.env` file is explicitly ignored in `.gitignore` to prevent leakage to public Git repositories.
+* **Cookie-based Session Authentication:** JWTs are stored in secure HTTP-Only cookies, preventing script injection (XSS) from hijacking user sessions.
