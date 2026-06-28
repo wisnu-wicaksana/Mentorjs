@@ -128,6 +128,22 @@ export const ProfileModal = ({ isOpen, onClose, user, sessionsCount, onGoToAuth,
             <span className="font-semibold text-gray-300">{user ? 'Registered User' : 'Guest Student'}</span>
           </div>
 
+          <div className="bg-slate-900/40 border border-gray-900/50 rounded-xl px-4 py-2.5 flex items-center justify-between text-xs gap-4">
+            <span className="text-gray-500 shrink-0">Username:</span>
+            <span className="font-semibold text-gray-300 truncate max-w-[70%]" title={user?.username || 'Guest'}>
+              {user?.username || 'Guest'}
+            </span>
+          </div>
+
+          {user?.email && (
+            <div className="bg-slate-900/40 border border-gray-900/50 rounded-xl px-4 py-2.5 flex items-center justify-between text-xs gap-4">
+              <span className="text-gray-500 shrink-0">Email:</span>
+              <span className="font-semibold text-gray-300 truncate max-w-[70%]" title={user.email}>
+                {user.email}
+              </span>
+            </div>
+          )}
+
           {user?.createdAt && (
             <div className="bg-slate-900/40 border border-gray-900/50 rounded-xl px-4 py-2.5 flex items-center justify-between text-xs">
               <span className="text-gray-500">Member Since:</span>
