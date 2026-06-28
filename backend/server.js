@@ -17,13 +17,17 @@ const allowedOrigins = [
   'http://127.0.0.1:5173',
   'http://127.0.0.1:5174',
   process.env.FRONTEND_URL
-].filter(Boolean);
+]
+  .filter(Boolean)
+  .map(url => url.replace(/\/$/, ""));
 
 app.use(cors({
   origin: function (origin, callback) {
     // izinkan request tanpa origin (seperti mobile apps, postman, curl)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
+    const cleanOrigin = origin.replace(/\/$/, "");
+    if (allowedOrigins.indexOf(cleanOrigin) === -1) {
+      console.warn(`[CORS Blocked] Request Origin: ${origin}, Sanitized: ${cleanOrigin}. Allowed list:`, allowedOrigins);
       const msg = 'Kebijakan CORS memblokir akses dari origin ini.';
       return callback(new Error(msg), false);
     }
