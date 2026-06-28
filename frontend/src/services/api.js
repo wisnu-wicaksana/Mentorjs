@@ -50,7 +50,7 @@ export const historyAPI = {
     const response = await apiClient.get('/history');
     return response.data;
   },
-  createSession: async (title = 'Sesi Belajar Baru', initialCode = '') => {
+  createSession: async (title = 'New Learning Session', initialCode = '') => {
     const response = await apiClient.post('/history', { title, initialCode });
     return response.data;
   },

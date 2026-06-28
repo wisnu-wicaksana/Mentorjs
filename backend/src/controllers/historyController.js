@@ -29,7 +29,7 @@ const getSessions = async (req, res) => {
     console.error('Error di getSessions:', error);
     res.status(500).json({
       status: 'error',
-      message: 'Gagal mengambil riwayat sesi belajar: ' + error.message,
+      message: 'Failed to retrieve learning session history: ' + error.message,
     });
   }
 };
@@ -45,7 +45,7 @@ const createSession = async (req, res) => {
     const newSession = await prisma.session.create({
       data: {
         userId,
-        title: title || 'Sesi Belajar Baru',
+        title: title || 'New Learning Session',
         lastSavedCode: initialCode || '',
       },
       select: {
@@ -64,7 +64,7 @@ const createSession = async (req, res) => {
     console.error('Error di createSession:', error);
     res.status(500).json({
       status: 'error',
-      message: 'Gagal membuat sesi belajar baru: ' + error.message,
+      message: 'Failed to create new learning session: ' + error.message,
     });
   }
 };
@@ -95,7 +95,7 @@ const getSessionById = async (req, res) => {
     if (!session) {
       return res.status(404).json({
         status: 'error',
-        message: 'Sesi belajar tidak ditemukan.',
+        message: 'Learning session not found.',
       });
     }
 
@@ -107,7 +107,7 @@ const getSessionById = async (req, res) => {
     console.error('Error di getSessionById:', error);
     res.status(500).json({
       status: 'error',
-      message: 'Gagal memuat detail sesi belajar: ' + error.message,
+      message: 'Failed to load learning session details: ' + error.message,
     });
   }
 };
@@ -129,7 +129,7 @@ const updateSessionCode = async (req, res) => {
     if (!session) {
       return res.status(404).json({
         status: 'error',
-        message: 'Sesi belajar tidak ditemukan.',
+        message: 'Learning session not found.',
       });
     }
 
@@ -151,7 +151,7 @@ const updateSessionCode = async (req, res) => {
     console.error('Error di updateSessionCode:', error);
     res.status(500).json({
       status: 'error',
-      message: 'Gagal memperbarui kode editor: ' + error.message,
+      message: 'Failed to update editor code: ' + error.message,
     });
   }
 };
@@ -173,7 +173,7 @@ const deleteSession = async (req, res) => {
     if (!session) {
       return res.status(404).json({
         status: 'error',
-        message: 'Sesi belajar tidak ditemukan.',
+        message: 'Learning session not found.',
       });
     }
 
@@ -183,13 +183,13 @@ const deleteSession = async (req, res) => {
 
     res.json({
       status: 'success',
-      message: 'Sesi belajar berhasil dihapus.',
+      message: 'Learning session deleted successfully.',
     });
   } catch (error) {
     console.error('Error di deleteSession:', error);
     res.status(500).json({
       status: 'error',
-      message: 'Gagal menghapus sesi belajar: ' + error.message,
+      message: 'Failed to delete learning session: ' + error.message,
     });
   }
 };

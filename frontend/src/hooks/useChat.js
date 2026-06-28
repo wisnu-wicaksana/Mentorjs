@@ -79,7 +79,7 @@ export const useChat = () => {
     if (!isAuthenticated) return null;
     try {
       setIsLoading(true);
-      const response = await historyAPI.createSession('Sesi Belajar Baru', initialCode);
+      const response = await historyAPI.createSession('New Learning Session', initialCode);
       if (response.status === 'success' && response.data) {
         const newSession = response.data;
         
@@ -171,12 +171,12 @@ export const useChat = () => {
         setChatHistory(prev => [...prev, { sender: 'mentor', text: result.data.reply }]);
         
         // Muat ulang daftar sesi karena judul sesi mungkin otomatis berubah 
-        // dari "Sesi Belajar Baru" menjadi ringkasan pesan pertama user
+        // dari "New Learning Session" menjadi ringkasan pesan pertama user
         if (isAuthenticated) {
           await loadSessions();
         }
       } else {
-        throw new Error("Gagal mengambil respon mentor");
+        throw new Error("Failed to retrieve mentor response");
       }
     } catch (err) {
       console.error("Error saat mengirim pesan:", err);
@@ -184,7 +184,7 @@ export const useChat = () => {
         ...prev,
         { 
           sender: 'mentor', 
-          text: '⚠️ Maaf, gagal menghubungkan ke AI Mentor. Silakan periksa koneksi server lokal Anda.'  
+          text: '⚠️ Sorry, failed to connect to AI Mentor. Please check your local server connection.'  
         }
       ]);
     } finally {

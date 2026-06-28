@@ -9,7 +9,7 @@ const getMentorResponse = async (req, res) => {
     if (!message && !currentCode) {
       return res.status(400).json({
         status: "error",
-        message: "Request tidak valid. Harap sertakan pesan atau kode editor."
+        message: "Invalid request. Please include a message or editor code."
       });
     }
 
@@ -37,7 +37,7 @@ const getMentorResponse = async (req, res) => {
         if (activeSession) {
           // Jika judul sesi masih default, ubah menjadi potongan pesan pertama user
           let updatedTitle = undefined;
-          if (activeSession.title === 'Sesi Belajar Baru' && message) {
+          if (activeSession.title === 'New Learning Session' && message) {
             updatedTitle = message.length > 35 ? message.substring(0, 32) + '...' : message;
           }
 
@@ -47,7 +47,7 @@ const getMentorResponse = async (req, res) => {
               data: {
                 sessionId,
                 sender: 'user',
-                text: message || '[Mengirimkan perubahan kode editor]'
+                text: message || '[Submitting editor code updates]'
               }
             }),
             prisma.message.create({
@@ -84,7 +84,7 @@ const getMentorResponse = async (req, res) => {
     console.error("Error di mentorController:", error);
     res.status(500).json({
       status: "error",
-      message: "Gagal terhubung ke AI Mentor: " + error.message
+      message: "Failed to connect to AI Mentor: " + error.message
     });
   }
 };
