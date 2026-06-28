@@ -8,11 +8,11 @@ const generateToken = (res, userId) => {
     expiresIn: '7d', // Token valid for 7 days
   });
 
-  // Set token inside a secure HTTP-Only cookie
+  // Set token inside a secure HTTP-Only cookie with cross-origin cookie sharing support
   res.cookie('token', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
-    sameSite: 'strict',
+    secure: true, // Required for sameSite: 'none'
+    sameSite: 'none', // Allow browser to send cookie cross-origin
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
   });
 };
@@ -167,6 +167,8 @@ const logoutUser = (req, res) => {
   res.cookie('token', '', {
     httpOnly: true,
     expires: new Date(0), // Set date to past to delete cookie
+    secure: true,
+    sameSite: 'none',
   });
   res.json({ status: 'success', message: 'Successfully signed out.' });
 };

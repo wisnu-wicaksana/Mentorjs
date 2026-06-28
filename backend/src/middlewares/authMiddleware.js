@@ -7,7 +7,7 @@ const authenticateToken = (req, res, next) => {
   if (!token) {
     return res.status(401).json({
       status: 'error',
-      message: 'Akses ditolak. Silakan login terlebih dahulu untuk mengakses fitur ini.',
+      message: 'Access denied. Please sign in to access this resource.',
     });
   }
 
@@ -20,7 +20,7 @@ const authenticateToken = (req, res, next) => {
     console.error('Error verifikasi token JWT:', error.message);
     return res.status(403).json({
       status: 'error',
-      message: 'Sesi Anda telah kedaluwarsa atau token tidak valid. Silakan login kembali.',
+      message: 'Your session has expired or the token is invalid. Please sign in again.',
     });
   }
 };
