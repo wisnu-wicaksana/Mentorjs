@@ -45,7 +45,7 @@ app.use('/api/history', historyRoutes);
 app.use('/api/mentor', mentorRoutes);
 
 // Jalankan Server (Hanya jika dijalankan langsung, bukan sebagai Vercel Serverless Function)
-if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+if (!process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`[START] Server Mentorjs berjalan di http://localhost:${PORT}`);
   });

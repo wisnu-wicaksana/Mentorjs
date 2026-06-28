@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
       }
       return { success: false, message: response.message };
     } catch (error) {
-      const msg = error.response?.data?.message || 'Gagal masuk. Silakan periksa kembali email & password Anda.';
+      const msg = error.response?.data?.message || 'Login failed. Please check your email & password again.';
       return { success: false, message: msg };
     }
   };
@@ -68,7 +68,7 @@ export const AuthProvider = ({ children }) => {
       }
       return { success: false, message: response.message };
     } catch (error) {
-      const msg = error.response?.data?.message || 'Gagal mendaftar. Data tidak valid atau sudah digunakan.';
+      const msg = error.response?.data?.message || 'Registration failed. Invalid input data or account already exists.';
       return { success: false, message: msg };
     }
   };
@@ -110,7 +110,7 @@ export const AuthProvider = ({ children }) => {
       }
       return { success: false, message: response.message };
     } catch (error) {
-      const msg = error.response?.data?.message || 'Gagal mengirim ulang OTP.';
+      const msg = error.response?.data?.message || 'Failed to resend OTP.';
       return { success: false, message: msg };
     }
   };
