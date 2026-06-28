@@ -42,7 +42,6 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
           >
             &larr; Home
           </button>
-          <h2 className="text-xs sm:text-sm font-semibold text-gray-400 hidden lg:block">main.js</h2>
           <select 
             onChange={(e) => setCode(TEMPLATES[e.target.value] || '')}
             defaultValue="default"
