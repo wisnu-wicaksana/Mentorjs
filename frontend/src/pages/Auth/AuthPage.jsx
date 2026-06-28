@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { Sparkles, Mail, Lock, User, LogIn, UserPlus, Eye, EyeOff } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
+import { BackgroundEffect } from '../../components/ui/BackgroundEffect';
 
 export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
   const { login, register, verifyOTP, resendOTP } = useAuth();
@@ -111,10 +112,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white font-sans flex flex-col justify-center items-center relative overflow-hidden px-4 select-none">
-      
-      {/* Efek Latar Belakang Gradien Glowing */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] bg-violet-600/10 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-1/4 left-1/3 w-[300px] h-[300px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none" />
+      <BackgroundEffect />
 
       {/* Kontainer Card Form Glassmorphism */}
       <div className="w-full max-w-md bg-slate-900/60 border border-gray-800/80 p-8 rounded-2xl shadow-2xl backdrop-blur-xl relative z-10">
@@ -126,7 +124,7 @@ export const AuthPage = ({ onLoginSuccess, onBackToHome }) => {
             <span>MentorJS AI Platform</span>
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-gray-100 to-gray-400 bg-clip-text text-transparent">
-            {isOtpStep ? 'Verifikasi Akun' : 'Aura Mentor'}
+            {isOtpStep ? 'Verifikasi Akun' : 'Mentor JS'}
           </h1>
           <p className="text-xs text-gray-500 mt-1 leading-relaxed">
             {isOtpStep 
