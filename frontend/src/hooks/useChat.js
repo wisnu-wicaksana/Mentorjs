@@ -17,17 +17,24 @@ export const useChat = () => {
 
   // Reset state ketika user logout (transisi ke mode tamu)
   const isFirstMount = useRef(true);
+
+  const resetChat = useCallback(() => {
+    setChatHistory([DEFAULT_WELCOME_MESSAGE]);
+  }, []);
+
   useEffect(() => {
     if (isFirstMount.current) {
       isFirstMount.current = false;
       return;
     }
     if (!isAuthenticated) {
-      setSessions([]);
-      setActiveSessionId(null);
-      setChatHistory([DEFAULT_WELCOME_MESSAGE]);
+      Promise.resolve().then(() => {
+        setSessions([]);
+        setActiveSessionId(null);
+        resetChat();
+      });
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, resetChat]);
 
   // 1. Memuat daftar sesi belajar dari database
   const loadSessions = useCallback(async () => {
@@ -131,7 +138,7 @@ export const useChat = () => {
     } catch (err) {
       console.error('Gagal menghapus sesi:', err.message);
     }
-  }, [isAuthenticated, activeSessionId, loadSessions, selectSession]);
+  }, [isAuthenticated, activeSessionId, loadSessions, selectSession, resetChat]);
 
   // 5. Mengirim Pesan Chat & Menyimpannya ke DB secara Transaksional
   const sendMessage = async (code, consoleOutput) => {
@@ -190,10 +197,6 @@ export const useChat = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const resetChat = () => {
-    setChatHistory([DEFAULT_WELCOME_MESSAGE]);
   };
 
   return {
