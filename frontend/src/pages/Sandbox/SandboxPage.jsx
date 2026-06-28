@@ -8,13 +8,15 @@ import { StatusBar } from './components/StatusBar';
 import { HistorySidebar } from './components/HistorySidebar';
 import { historyAPI } from '../../services/api';
 import { useAuth } from '../../hooks/useAuth';
+import { ProfileModal } from './components/ProfileModal';
 
 const DEFAULT_CODE = `// Write JavaScript code here\nconst mentor = "MentorJS";\nconsole.log("Hello from " + mentor + "!");`;
 
 export const SandboxPage = ({ onBackToHome, onGoToAuth }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user, setUser } = useAuth();
   const [activeTab, setActiveTab] = useState('editor');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   // States & Refs for Split Screen Drag Resizer
   const [editorWidth, setEditorWidth] = useState(65); // Default 65% width
@@ -182,6 +184,7 @@ export const SandboxPage = ({ onBackToHome, onGoToAuth }) => {
             onSelectSession={handleSelectSession}
             onCreateSession={handleCreateSession}
             onDeleteSession={(id) => deleteSession(id, setCode)}
+            onOpenProfile={() => setIsProfileOpen(true)}
           />
         </div>
       )}
@@ -210,6 +213,7 @@ export const SandboxPage = ({ onBackToHome, onGoToAuth }) => {
             onToggleSidebar={() => setIsSidebarOpen(prev => !prev)}
             isAuthenticated={isAuthenticated}
             onGoToAuth={onGoToAuth}
+            onOpenProfile={() => setIsProfileOpen(true)}
           />
 
           {/* Vertical Divider Resizer (Desktop only) */}
@@ -262,6 +266,16 @@ export const SandboxPage = ({ onBackToHome, onGoToAuth }) => {
         </div>
 
       </div>
+
+      {/* Profile & Analytics Modal */}
+      <ProfileModal 
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+        user={user}
+        sessionsCount={sessions.length}
+        onGoToAuth={onGoToAuth}
+        onProfileUpdated={(updatedUser) => setUser(updatedUser)}
+      />
 
     </div>
   );

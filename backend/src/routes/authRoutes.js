@@ -27,4 +27,7 @@ router.post('/logout', authenticateToken, authController.logoutUser);
 // Route untuk mendapatkan profil pengguna saat ini
 router.get('/me', authenticateToken, authController.getUserProfile);
 
+// Route untuk memperbarui profil pengguna (username & password)
+router.put('/me', authenticateToken, authController.updateUserProfile);
+
 module.exports = router;

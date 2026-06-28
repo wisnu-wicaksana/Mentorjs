@@ -6,7 +6,8 @@ export const HistorySidebar = ({
   activeSessionId, 
   onSelectSession, 
   onCreateSession, 
-  onDeleteSession 
+  onDeleteSession,
+  onOpenProfile
 }) => {
   const { user, logout } = useAuth();
 
@@ -77,8 +78,12 @@ export const HistorySidebar = ({
 
       {/* Bagian Bawah: Informasi Akun & Logout */}
       <div className="p-3 border-t border-gray-900 bg-slate-950/80 flex items-center justify-between">
-        <div className="flex flex-col truncate max-w-[70%]">
-          <span className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">User</span>
+        <div 
+          onClick={onOpenProfile}
+          className="flex flex-col truncate max-w-[70%] cursor-pointer hover:opacity-80 active:scale-95 transition-all group"
+          title="View Profile & Stats"
+        >
+          <span className="text-[10px] text-violet-400 group-hover:text-violet-300 uppercase tracking-wider font-bold">Profile & Stats</span>
           <span className="text-xs text-gray-300 truncate font-semibold">{user?.username || 'Guest'}</span>
         </div>
 

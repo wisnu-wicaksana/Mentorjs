@@ -9,6 +9,13 @@ export const useCodeRunner = () => {
   const [variables, setVariables] = useState([]);
 
   const runCode = () => {
+    try {
+      const currentCount = parseInt(localStorage.getItem('mentorjs_run_count') || '0', 10);
+      localStorage.setItem('mentorjs_run_count', (currentCount + 1).toString());
+    } catch (e) {
+      console.error("Failed to update runs stats:", e.message);
+    }
+
     setConsoleOutput([]); // Reset output
     setVariables([]);    // Reset variables
     const tempLogs = [];

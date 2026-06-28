@@ -48,6 +48,10 @@ export const authAPI = {
     const response = await apiClient.post('/auth/reset-password', { email, otpCode, newPassword });
     return response.data;
   },
+  updateProfile: async (username, password) => {
+    const response = await apiClient.put('/auth/me', { username, password });
+    return response.data;
+  },
 };
 
 /**

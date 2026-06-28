@@ -407,6 +407,71 @@ const resetPassword = async (req, res) => {
   }
 };
 
+// 9. Update User Profile (Username & Password)
+const updateUserProfile = async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const userId = req.user.id;
+
+    const dataToUpdate = {};
+
+    // Validate and update username
+    if (username) {
+      if (username.trim().length < 3) {
+        return res.status(400).json({ status: 'error', message: 'Username must be at least 3 characters long.' });
+      }
+
+      // Check if username is already taken by another user
+      const existingUser = await prisma.user.findFirst({
+        where: {
+          username,
+          NOT: { id: userId },
+        },
+      });
+
+      if (existingUser) {
+        return res.status(400).json({ status: 'error', message: 'Username is already taken by another user.' });
+      }
+
+      dataToUpdate.username = username;
+    }
+
+    // Validate and update password
+    if (password) {
+      if (password.length < 6) {
+        return res.status(400).json({ status: 'error', message: 'Password must be at least 6 characters long.' });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      dataToUpdate.password = await bcrypt.hash(password, salt);
+    }
+
+    if (Object.keys(dataToUpdate).length === 0) {
+      return res.status(400).json({ status: 'error', message: 'No profile details were provided to update.' });
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: dataToUpdate,
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        createdAt: true,
+      },
+    });
+
+    res.json({
+      status: 'success',
+      message: 'Profile updated successfully!',
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.error('Error in updateUserProfile:', error);
+    res.status(500).json({ status: 'error', message: 'Failed to update profile: ' + error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -416,4 +481,5 @@ module.exports = {
   resendOTP,
   forgotPassword,
   resetPassword,
+  updateUserProfile,
 };

@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Play, Trash2, Download, Menu } from 'lucide-react';
+import { Play, Trash2, Download, Menu, User } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import { TEMPLATES } from '../../../constants/templates';
 import { Badge } from '../../../components/ui/Badge';
 
-export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, clearConsole, variables, onBackToHome, onToggleSidebar, isAuthenticated, onGoToAuth, style }) => {
+export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, clearConsole, variables, onBackToHome, onToggleSidebar, isAuthenticated, onGoToAuth, style, onOpenProfile }) => {
   const [bottomTab, setBottomTab] = useState('console'); // 'console' | 'inspector'
 
   const exportCode = () => {
@@ -66,6 +66,15 @@ export const EditorPanel = ({ activeTab, code, setCode, runCode, consoleOutput, 
             </button>
           )}
           
+          <button 
+            onClick={onOpenProfile}
+            className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 border border-gray-800 text-gray-300 hover:text-white px-2.5 py-2 sm:px-3 sm:py-2 rounded-md text-[10px] sm:text-xs font-bold transition-all active:scale-95 cursor-pointer"
+            title="Profile & Stats"
+          >
+            <User size={13} className="sm:w-3.5 sm:h-3.5" />
+            <span className="hidden sm:inline">Profile</span>
+          </button>
+
           <button 
             onClick={exportCode}
             className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 border border-gray-800 text-gray-300 hover:text-white px-2.5 py-2 sm:px-3 sm:py-2 rounded-md text-[10px] sm:text-xs font-bold transition-all active:scale-95 cursor-pointer"
